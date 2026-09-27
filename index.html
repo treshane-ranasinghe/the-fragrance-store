@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Fragrance Store — Luxury Perfumes in Sri Lanka</title>
+  <meta name="description" content="The Fragrance Store — a curated house of authentic designer and niche perfumes in Sri Lanka." />
+  <meta name="theme-color" content="#0B0A09" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&family=Nunito:wght@700;800;900&family=Antonio:wght@300;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    document.documentElement.classList.add("js");
+    // Try other extensions before falling back to the gold placeholder
+    function imgFallback(img) {
+      var exts = ["jpg", "png", "jpeg", "webp"];
+      var src = img.getAttribute("src");
+      var m = src.match(/^(.*)\.(\w+)$/);
+      var tried = (img.dataset.tried || m[2]).split(",");
+      var next = exts.filter(function (e) { return tried.indexOf(e) === -1; })[0];
+      if (!next) { img.remove(); return; }
+      img.dataset.tried = tried.concat(next).join(",");
+      img.src = m[1] + "." + next;
+    }
+  </script>
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+
+  <!-- Intro -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader__logo">
+      <span class="preloader__top">THE FRAGRANCE</span>
+      <span class="preloader__word">
+        <span class="pl-letter">S</span>
+        <svg class="preloader__bottle" viewBox="-3 -4 114 179">
+          <defs>
+            <clipPath id="plClip"><path d="M31 3Q54-1 77 3V55H80V59H108V172H0V59H27V55H31Z"/></clipPath>
+            <linearGradient id="plLiquid" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#F4E4BC"/><stop offset=".45" stop-color="#C9A45C"/><stop offset="1" stop-color="#8F6B2E"/>
+            </linearGradient>
+          </defs>
+          <g clip-path="url(#plClip)">
+            <rect class="pl-liquid" x="-3" y="-4" width="114" height="180" fill="url(#plLiquid)"/>
+          </g>
+          <path class="pl-outline" d="M31 3Q54-1 77 3V55H80V59H108V172H0V59H27V55H31Z" pathLength="1"/>
+        </svg>
+        <span class="pl-letter">O</span><span class="pl-letter">R</span><span class="pl-letter">E</span>
+      </span>
+    </div>
+    <div class="preloader__line"><i></i></div>
+  </div>
+
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+  <!-- Announcement -->
+  <div class="announce">
+    <p>Authentic fragrances only &nbsp;·&nbsp; Island-wide delivery across Sri Lanka &nbsp;·&nbsp; Enquire on WhatsApp</p>
+  </div>
+
+  <!-- Navigation -->
+  <header class="nav" id="nav">
+    <div class="nav__inner container">
+      <button class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+
+      <nav class="nav__links nav__links--left" aria-label="Primary">
+        <a href="#collections">Collections</a>
+        <a href="#signatures">Signatures</a>
+        <a href="#maison">Our Story</a>
+      </nav>
+
+      <a href="#top" class="logo" aria-label="The Fragrance Store — home">
+        <span class="logo__top">The Fragrance</span>
+        <span class="logo__word">S<span class="logo__bottle" aria-hidden="true"><svg viewBox="0 0 108 172"><path d="M31 3Q54-1 77 3V55H80V59H108V172H0V59H27V55H31Z"/></svg><i></i><i></i><i></i><i></i></span><span class="sr-only">T</span>ORE</span>
+      </a>
+
+      <nav class="nav__links nav__links--right" aria-label="Secondary">
+        <a href="#notes">The Art of Scent</a>
+        <a href="#visit">Visit</a>
+        <a href="#" class="btn btn--ghost btn--sm js-whatsapp" data-msg="Hello, I'd like to enquire about a fragrance.">Enquire</a>
+      </nav>
+    </div>
+
+    <!-- Mobile drawer -->
+    <div class="drawer" id="drawer">
+      <a href="#collections">Collections</a>
+      <a href="#signatures">Signatures</a>
+      <a href="#maison">Our Story</a>
+      <a href="#notes">The Art of Scent</a>
+      <a href="#visit">Visit</a>
+      <a href="#" class="btn btn--gold js-whatsapp" data-msg="Hello, I'd like to enquire about a fragrance.">Enquire on WhatsApp</a>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- Hero -->
+    <section class="hero" id="hero" style="--tint:#D9A444" aria-roledescription="carousel" aria-label="Featured fragrances">
+      <div class="hero__media" id="heroMedia">
+        <div class="hero__glow" aria-hidden="true"></div>
+        <div class="hero__depth" data-depth="-14">
+          <div class="hero__slides" id="heroSlides">
+            <figure class="hero__slide is-active" data-ghost="ELIXIR" data-product="boss-bottled-elixir" data-tint="#D9A444">
+              <img src="images/hero.jpg" alt="Hugo Boss Bottled Elixir" fetchpriority="high" onerror="imgFallback(this)" />
+            </figure>
+            <figure class="hero__slide" data-ghost="WANTED" data-product="azzaro-most-wanted-parfum" data-tint="#D07A34">
+              <img src="images/azzaro-gold.jpg" alt="Azzaro The Most Wanted" onerror="imgFallback(this)" />
+            </figure>
+            <figure class="hero__slide" data-ghost="ASAD" data-product="lattafa-asad-bourbon" data-tint="#B0683A">
+              <img src="images/products/lattafa-asad-bourbon.jpg" alt="Lattafa Asad Bourbon" onerror="imgFallback(this)" />
+            </figure>
+            <figure class="hero__slide" data-ghost="KHAMRAH" data-product="lattafa-khamrah" data-tint="#D69A48">
+              <img src="images/products/lattafa-khamrah.jpg" alt="Lattafa Khamrah" onerror="imgFallback(this)" />
+            </figure>
+            <figure class="hero__slide" data-ghost="EXPLORER" data-product="montblanc-explorer" data-tint="#8FA6B6">
+              <img src="images/products/montblanc-explorer.jpg" alt="Montblanc Explorer" onerror="imgFallback(this)" />
+            </figure>
+            <span class="hero__wipe" aria-hidden="true"></span>
+          </div>
+        </div>
+        <div class="hero__veil"></div>
+        <div class="hero__spot" aria-hidden="true"></div>
+        <div class="hero__depth hero__ghost-wrap" data-depth="22" aria-hidden="true">
+          <span class="hero__ghost" id="heroGhost">ELIXIR</span>
+        </div>
+        <canvas class="hero__particles" id="particles"></canvas>
+      </div>
+
+      <div class="hero__content container">
+        <p class="eyebrow hero-in" style="--d:.1s">Maison de Parfum &nbsp;—&nbsp; Colombo</p>
+        <h1 class="hero__title">
+          <span class="line"><span>The art of</span></span>
+          <span class="line"><span><em class="gold-text">leaving an</em></span></span>
+          <span class="line"><span><em class="gold-text">impression</em></span></span>
+        </h1>
+        <p class="hero__lead hero-in" style="--d:.75s">
+          A curated house of authentic designer and niche fragrances, chosen for those
+          who believe scent is the most intimate form of memory.
+        </p>
+        <div class="hero__cta hero-in" style="--d:.9s">
+          <a href="#signatures" class="btn btn--gold">Discover the Collection</a>
+          <a href="#" class="btn btn--ghost js-whatsapp" data-msg="Hello, I'd like a fragrance recommendation.">Private Consultation</a>
+        </div>
+      </div>
+
+      <!-- Now featuring (filled from js/products.js) -->
+      <div class="hero__depth hero__feature-wrap hero-in" data-depth="8" style="--d:1.05s">
+        <article class="hero__feature" id="heroFeature" aria-live="polite">
+          <header class="hero__feature-top">
+            <span class="hero__feature-label">Now Featuring</span>
+            <span class="hero__count"><b id="heroIndex">01</b> / 05</span>
+          </header>
+          <div class="hero__feature-body" id="heroFeatureBody">
+            <p class="hero__feature-house" id="heroHouse"></p>
+            <h2 class="hero__feature-name" id="heroName"></h2>
+            <ul class="hero__notes" id="heroNotes"></ul>
+          </div>
+          <button class="hero__feature-cta" id="heroView" type="button">
+            <span>View fragrance</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </article>
+      </div>
+
+      <!-- Thumbnail rail (built by js/main.js from the slides) -->
+      <nav class="hero__rail hero-in" id="heroRail" style="--d:1.2s" aria-label="Choose a featured fragrance"></nav>
+
+      <a href="#collections" class="hero__scroll" aria-label="Scroll down">
+        <span>Scroll</span>
+        <i></i>
+      </a>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Oud</span><b>✦</b><span>Amber</span><b>✦</b><span>Rose de Mai</span><b>✦</b><span>Sandalwood</span><b>✦</b><span>Bergamot</span><b>✦</b><span>Vetiver</span><b>✦</b><span>Iris</span><b>✦</b><span>Musk</span><b>✦</b><span>Leather</span><b>✦</b><span>Saffron</span><b>✦</b>
+        <span>Oud</span><b>✦</b><span>Amber</span><b>✦</b><span>Rose de Mai</span><b>✦</b><span>Sandalwood</span><b>✦</b><span>Bergamot</span><b>✦</b><span>Vetiver</span><b>✦</b><span>Iris</span><b>✦</b><span>Musk</span><b>✦</b><span>Leather</span><b>✦</b><span>Saffron</span><b>✦</b>
+      </div>
+    </div>
+
+    <!-- Collections -->
+    <section class="section" id="collections">
+      <div class="container">
+        <header class="section__head reveal">
+          <p class="eyebrow">Curated Collections</p>
+          <h2 class="section__title">Find the scent that <em>speaks for you</em></h2>
+        </header>
+
+        <div class="collections">
+          <a href="#signatures" class="collection reveal" data-filter="him">
+            <div class="collection__media">
+              <img src="images/products/montblanc-explorer.jpg" alt="Fragrances for him" loading="lazy" onerror="imgFallback(this)" />
+            </div>
+            <div class="collection__body">
+              <span class="collection__num">01</span>
+              <h3>Pour Homme</h3>
+              <p>Woods, leather &amp; spice</p>
+              <span class="link-arrow">Explore</span>
+            </div>
+          </a>
+
+          <a href="#signatures" class="collection collection--tall reveal" data-filter="her">
+            <div class="collection__media">
+              <img src="images/products/lattafa-khamrah.jpg" alt="Fragrances for her" loading="lazy" onerror="imgFallback(this)" />
+            </div>
+            <div class="collection__body">
+              <span class="collection__num">02</span>
+              <h3>Pour Femme</h3>
+              <p>Florals, musks &amp; gourmands</p>
+              <span class="link-arrow">Explore</span>
+            </div>
+          </a>
+
+          <a href="#signatures" class="collection reveal" data-filter="arabian">
+            <div class="collection__media">
+              <img src="images/products/lattafa-asad-bourbon.jpg" alt="Arabian and oud fragrances" loading="lazy" onerror="imgFallback(this)" />
+            </div>
+            <div class="collection__body">
+              <span class="collection__num">03</span>
+              <h3>Arabian &amp; Oud</h3>
+              <p>Rare, opulent, unforgettable</p>
+              <span class="link-arrow">Explore</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Signatures / Products -->
+    <section class="section section--dark" id="signatures">
+      <div class="container">
+        <header class="section__head section__head--row reveal">
+          <div>
+            <p class="eyebrow">The Signatures</p>
+            <h2 class="section__title">Our most <em>coveted</em> bottles</h2>
+          </div>
+          <div class="filters" role="tablist" aria-label="Filter fragrances">
+            <button class="filter is-active" data-filter="all" role="tab" aria-selected="true">All</button>
+            <button class="filter" data-filter="him" role="tab" aria-selected="false">For Him</button>
+            <button class="filter" data-filter="her" role="tab" aria-selected="false">For Her</button>
+            <button class="filter" data-filter="arabian" role="tab" aria-selected="false">Arabian</button>
+          </div>
+        </header>
+
+        <div class="products" id="products"><!-- Rendered by js/main.js --></div>
+
+        <p class="products__note reveal">
+          Can't find what you're looking for? We source on request —
+          <a href="#" class="js-whatsapp" data-msg="Hello, I'm looking for a specific fragrance:">tell us your scent</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- Story -->
+    <section class="section story" id="maison">
+      <div class="container story__grid">
+        <div class="story__media reveal">
+          <div class="story__frame" data-parallax-img>
+            <img src="images/azzaro-gold.jpg" alt="Inside The Fragrance Store" loading="lazy" onerror="imgFallback(this)" />
+          </div>
+          <div class="story__badge">
+            <span class="story__badge-num"><span data-count="100">0</span>%</span>
+            <span class="story__badge-txt">Authentic<br />Guaranteed</span>
+          </div>
+        </div>
+
+        <div class="story__copy">
+          <p class="eyebrow reveal">Our Story</p>
+          <h2 class="section__title reveal">A house built on <em>trust &amp; taste</em></h2>
+          <p class="reveal">
+            The Fragrance Store was founded on a simple belief: that everyone in Sri Lanka deserves
+            access to genuine, world-class perfumery — without compromise. Every bottle we offer is
+            sourced from trusted distributors and inspected by hand.
+          </p>
+          <p class="reveal">
+            Whether you are searching for an everyday signature or a rare niche composition,
+            our consultants will guide you to the scent that feels unmistakably yours.
+          </p>
+
+          <ul class="pillars reveal">
+            <li>
+              <span class="pillars__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 2l2.4 5.6L20 9l-4.2 4 1 6L12 16l-4.8 3 1-6L4 9l5.6-1.4z"/></svg>
+              </span>
+              <div><h4>Authentic Only</h4><p>Sealed, original bottles from verified sources.</p></div>
+            </li>
+            <li>
+              <span class="pillars__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a2 2 0 100-4 2 2 0 000 4zM17 19a2 2 0 100-4 2 2 0 000 4z"/></svg>
+              </span>
+              <div><h4>Island-wide Delivery</h4><p>Carefully packed and delivered to your door.</p></div>
+            </li>
+            <li>
+              <span class="pillars__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>
+              </span>
+              <div><h4>Personal Consultation</h4><p>Expert guidance to find your signature.</p></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Art of scent / pyramid -->
+    <section class="section section--dark notes" id="notes">
+      <div class="container">
+        <header class="section__head section__head--center reveal">
+          <p class="eyebrow">The Art of Scent</p>
+          <h2 class="section__title">Every fragrance tells a story <em>in three acts</em></h2>
+        </header>
+
+        <div class="pyramid">
+          <article class="pyramid__item reveal">
+            <span class="pyramid__roman">I</span>
+            <h3>Top Notes</h3>
+            <p class="pyramid__time">The first 15 minutes</p>
+            <p>The opening overture — bright, fleeting and vivid. Citrus, bergamot, pink pepper and aromatic herbs that draw you in.</p>
+          </article>
+          <article class="pyramid__item reveal">
+            <span class="pyramid__roman">II</span>
+            <h3>Heart Notes</h3>
+            <p class="pyramid__time">Up to 4 hours</p>
+            <p>The soul of the perfume. Rose, jasmine, iris and spice unfold as the top notes fade, revealing its true character.</p>
+          </article>
+          <article class="pyramid__item reveal">
+            <span class="pyramid__roman">III</span>
+            <h3>Base Notes</h3>
+            <p class="pyramid__time">Lingers all day</p>
+            <p>The lasting memory. Oud, amber, vanilla, musk and precious woods that stay on skin long after you've left the room.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section testimonials">
+      <div class="container">
+        <header class="section__head section__head--center reveal">
+          <p class="eyebrow">Kind Words</p>
+          <h2 class="section__title">Loved by our <em>clientele</em></h2>
+        </header>
+
+        <div class="quotes" id="quotes">
+          <figure class="quote is-active">
+            <blockquote>“The only place in Colombo I trust for genuine perfumes. The consultation helped me find a scent I now can't live without.”</blockquote>
+            <figcaption>— Customer name, Colombo</figcaption>
+          </figure>
+          <figure class="quote">
+            <blockquote>“Beautifully packaged, delivered to Kandy within two days, and completely authentic. A truly premium experience.”</blockquote>
+            <figcaption>— Customer name, Kandy</figcaption>
+          </figure>
+          <figure class="quote">
+            <blockquote>“They sourced a rare niche fragrance I had been searching for for months. Exceptional service from start to finish.”</blockquote>
+            <figcaption>— Customer name, Galle</figcaption>
+          </figure>
+        </div>
+        <div class="quotes__dots" id="quoteDots" role="tablist" aria-label="Testimonials"></div>
+      </div>
+    </section>
+
+    <!-- Gallery strip -->
+    <section class="gallery" aria-label="Gallery">
+      <div class="gallery__item"><img src="images/hero.jpg" alt="" loading="lazy" onerror="imgFallback(this)" /></div>
+      <div class="gallery__item"><img src="images/products/lattafa-khamrah.jpg" alt="" loading="lazy" onerror="imgFallback(this)" /></div>
+      <div class="gallery__item"><img src="images/azzaro-gold.jpg" alt="" loading="lazy" onerror="imgFallback(this)" /></div>
+      <div class="gallery__item"><img src="images/products/montblanc-explorer.jpg" alt="" loading="lazy" onerror="imgFallback(this)" /></div>
+      <div class="gallery__item"><img src="images/products/lattafa-asad-bourbon.jpg" alt="" loading="lazy" onerror="imgFallback(this)" /></div>
+      <a href="#" class="gallery__cta js-instagram">
+        <span class="eyebrow">Follow the House</span>
+        <span class="gallery__handle">@thefragrancestore.lk</span>
+      </a>
+    </section>
+
+    <!-- Visit / Contact -->
+    <section class="section section--dark visit" id="visit">
+      <div class="container visit__grid">
+        <div class="visit__copy">
+          <p class="eyebrow reveal">Visit the Boutique</p>
+          <h2 class="section__title reveal">Experience our fragrances <em>in person</em></h2>
+          <p class="reveal">Step into our boutique to discover, sample and be guided by our fragrance consultants. Or reach us on WhatsApp for a private recommendation.</p>
+
+          <dl class="visit__details reveal">
+            <div>
+              <dt>Address</dt>
+              <dd id="addr">No. 00, Your Street,<br />Colombo 00, Sri Lanka</dd>
+            </div>
+            <div>
+              <dt>Hours</dt>
+              <dd>Mon – Sat &nbsp; 10:00 – 20:00<br />Sunday &nbsp; 11:00 – 18:00</dd>
+            </div>
+            <div>
+              <dt>Contact</dt>
+              <dd><a href="#" class="js-phone"></a><br /><a href="#" class="js-email"></a></dd>
+            </div>
+          </dl>
+
+          <div class="visit__cta reveal">
+            <a href="#" class="btn btn--gold js-whatsapp" data-msg="Hello, I'd like to enquire about a fragrance.">Chat on WhatsApp</a>
+            <a href="#" class="btn btn--ghost js-maps" target="_blank" rel="noopener">Get Directions</a>
+          </div>
+        </div>
+
+        <div class="visit__media reveal" data-parallax-img>
+          <img src="images/products/lattafa-asad-bourbon.jpg" alt="Lattafa Asad Bourbon" loading="lazy" onerror="imgFallback(this)" />
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__top">
+        <a href="#top" class="logo logo--lg" aria-label="The Fragrance Store — home">
+        <span class="logo__top">The Fragrance</span>
+        <span class="logo__word">S<span class="logo__bottle" aria-hidden="true"><svg viewBox="0 0 108 172"><path d="M31 3Q54-1 77 3V55H80V59H108V172H0V59H27V55H31Z"/></svg><i></i><i></i><i></i><i></i></span><span class="sr-only">T</span>ORE</span>
+        </a>
+        <p class="footer__tag">Authentic luxury perfumery, curated in Sri Lanka.</p>
+      </div>
+
+      <div class="footer__grid">
+        <div>
+          <h5>Explore</h5>
+          <a href="#collections">Collections</a>
+          <a href="#signatures">Signatures</a>
+          <a href="#maison">Our Story</a>
+          <a href="#notes">The Art of Scent</a>
+        </div>
+        <div>
+          <h5>Client Care</h5>
+          <a href="#" class="js-whatsapp" data-msg="Hello, I have a question about delivery.">Delivery</a>
+          <a href="#" class="js-whatsapp" data-msg="Hello, I'd like to order a gift.">Gifting</a>
+          <a href="#" class="js-whatsapp" data-msg="Hello, I'd like a fragrance consultation.">Consultation</a>
+        </div>
+        <div>
+          <h5>Follow</h5>
+          <a href="#" class="js-instagram" target="_blank" rel="noopener">Instagram</a>
+          <a href="#" class="js-facebook" target="_blank" rel="noopener">Facebook</a>
+          <a href="#" class="js-tiktok" target="_blank" rel="noopener">TikTok</a>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p>© <span id="year"></span> The Fragrance Store. All rights reserved.</p>
+        <p>thefragrancestore.lk</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Product detail modal -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal__close" data-close aria-label="Close">&times;</button>
+      <div class="modal__media ph-bottle" id="modalMedia"></div>
+      <div class="modal__body">
+        <p class="eyebrow" id="modalHouse"></p>
+        <h3 id="modalTitle"></h3>
+        <p class="modal__meta" id="modalMeta"></p>
+        <p class="modal__desc" id="modalDesc"></p>
+        <dl class="modal__notes" id="modalNotes"></dl>
+        <p class="modal__price" id="modalPrice"></p>
+        <a href="#" class="btn btn--gold btn--block" id="modalEnquire" target="_blank" rel="noopener">Enquire on WhatsApp</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating WhatsApp -->
+  <a href="#" class="float-wa js-whatsapp" data-msg="Hello, I'd like to enquire about a fragrance." aria-label="Chat on WhatsApp">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 001.8-1.2 2.2 2.2 0 00.1-1.2c0-.1-.2-.2-.4-.3z"/></svg>
+  </a>
+
+  <script src="js/products.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
