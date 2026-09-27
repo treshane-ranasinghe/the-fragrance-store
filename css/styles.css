@@ -856,6 +856,7 @@ html:not(.js) .preloader, .preloader.is-skipped { display: none; }
   transition: transform .45s var(--ease), background .4s, border-color .4s;
 }
 .cursor-ring.is-hover::after { transform: scale(1.85); background: rgba(201,164,92,.1); border-color: var(--gold); }
+.has-cursor .cursor, .has-cursor .cursor-ring { opacity: 1; }
 @media (hover: hover) and (pointer: fine) { .has-cursor, .has-cursor a, .has-cursor button { cursor: none; } }
 
 /* ---------- Product tilt + shine ---------- */
