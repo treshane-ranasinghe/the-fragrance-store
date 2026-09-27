@@ -70,17 +70,26 @@
   var toggle = document.getElementById("navToggle");
   var drawer = document.getElementById("drawer");
 
-  function setDrawer(open) {
+  function setDrawer(open, viaKeyboard) {
     toggle.setAttribute("aria-expanded", String(open));
     toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     drawer.classList.toggle("is-open", open);
+    drawer.setAttribute("aria-hidden", String(!open));
     document.body.style.overflow = open ? "hidden" : "";
+    // Move focus into the menu only for keyboard users (avoids a focus ring on tap)
+    if (open && viaKeyboard) setTimeout(function () { drawer.querySelector("a").focus({ preventScroll: true }); }, 350);
   }
-  toggle.addEventListener("click", function () {
-    setDrawer(toggle.getAttribute("aria-expanded") !== "true");
+  toggle.addEventListener("click", function (e) {
+    setDrawer(toggle.getAttribute("aria-expanded") !== "true", e.detail === 0);
   });
   drawer.querySelectorAll("a").forEach(function (a) {
     a.addEventListener("click", function () { setDrawer(false); });
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && drawer.classList.contains("is-open")) { setDrawer(false); toggle.focus(); }
+  });
+  window.matchMedia("(min-width: 1081px)").addEventListener("change", function (mq) {
+    if (mq.matches) setDrawer(false);
   });
 
   /* ---------- Scroll-driven effects (one rAF loop) ---------- */

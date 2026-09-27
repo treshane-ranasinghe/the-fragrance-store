@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>The Fragrance Store — Luxury Perfumes in Sri Lanka</title>
   <meta name="description" content="The Fragrance Store — a curated house of authentic designer and niche perfumes in Sri Lanka." />
   <meta name="theme-color" content="#0B0A09" />
@@ -59,14 +59,14 @@
 
   <!-- Announcement -->
   <div class="announce">
-    <p>Authentic fragrances only &nbsp;·&nbsp; Island-wide delivery across Sri Lanka &nbsp;·&nbsp; Enquire on WhatsApp</p>
+    <p><span class="announce__long">Authentic fragrances only &nbsp;·&nbsp; Island-wide delivery across Sri Lanka &nbsp;·&nbsp; Enquire on WhatsApp</span><span class="announce__short">Authentic only &nbsp;·&nbsp; Island-wide delivery</span></p>
   </div>
 
   <!-- Navigation -->
   <header class="nav" id="nav">
     <div class="nav__inner container">
-      <button class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span>
+      <button class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
+        <span></span><span></span><span></span>
       </button>
 
       <nav class="nav__links nav__links--left" aria-label="Primary">
@@ -85,16 +85,26 @@
         <a href="#visit">Visit</a>
         <a href="#" class="btn btn--ghost btn--sm js-whatsapp" data-msg="Hello, I'd like to enquire about a fragrance.">Enquire</a>
       </nav>
+      <a href="#" class="nav__wa js-whatsapp" data-msg="Hello, I'd like to enquire about a fragrance." aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 001.8-1.2 2.2 2.2 0 00.1-1.2c0-.1-.2-.2-.4-.3z"/></svg></a>
     </div>
 
-    <!-- Mobile drawer -->
-    <div class="drawer" id="drawer">
-      <a href="#collections">Collections</a>
-      <a href="#signatures">Signatures</a>
-      <a href="#maison">Our Story</a>
-      <a href="#notes">The Art of Scent</a>
-      <a href="#visit">Visit</a>
-      <a href="#" class="btn btn--gold js-whatsapp" data-msg="Hello, I'd like to enquire about a fragrance.">Enquire on WhatsApp</a>
+    <!-- Mobile menu -->
+    <div class="drawer" id="drawer" aria-hidden="true">
+      <nav class="drawer__links" aria-label="Mobile">
+        <a href="#collections" style="--i:0"><span>01</span>Collections</a>
+        <a href="#signatures" style="--i:1"><span>02</span>Signatures</a>
+        <a href="#maison" style="--i:2"><span>03</span>Our Story</a>
+        <a href="#notes" style="--i:3"><span>04</span>The Art of Scent</a>
+        <a href="#visit" style="--i:4"><span>05</span>Visit the Boutique</a>
+      </nav>
+      <div class="drawer__foot" style="--i:5">
+        <a href="#" class="btn btn--gold btn--block js-whatsapp" data-msg="Hello, I'd like to enquire about a fragrance.">Enquire on WhatsApp</a>
+        <div class="drawer__social">
+          <a href="#" class="js-instagram">Instagram</a>
+          <a href="#" class="js-facebook">Facebook</a>
+          <a href="#" class="js-tiktok">TikTok</a>
+        </div>
+      </div>
     </div>
   </header>
 
