@@ -92,35 +92,50 @@
     if (mq.matches) setDrawer(false);
   });
 
-  /* ---------- Scroll-driven effects (one rAF loop) ---------- */
-  var parallaxText = document.querySelectorAll("[data-parallax]");
-  var parallaxImgs = document.querySelectorAll("[data-parallax-img]");
+  /* ---------- Scroll-driven effects (one rAF loop, no layout reads per frame) ---------- */
+  var parallaxImgs = Array.prototype.map.call(document.querySelectorAll("[data-parallax-img]"), function (el) {
+    return { el: el, img: el.querySelector("img"), top: 0, h: 0 };
+  });
   var ticking = false;
+  var scrolled = null;
+  var vh = window.innerHeight;
+  var scrollMax = 1;
+
+  function measure() {
+    vh = window.innerHeight;
+    scrollMax = Math.max(1, document.documentElement.scrollHeight - vh);
+    var y = window.scrollY;
+    parallaxImgs.forEach(function (p) {
+      var r = p.el.getBoundingClientRect();
+      p.top = r.top + y; p.h = r.height;
+    });
+  }
 
   function onScroll() {
     var y = window.scrollY;
-    var vh = window.innerHeight;
-    nav.classList.toggle("is-scrolled", y > 30);
-
-    var max = document.documentElement.scrollHeight - vh;
-    progress.style.transform = "scaleX(" + (max > 0 ? y / max : 0) + ")";
+    var isScrolled = y > 30;
+    if (isScrolled !== scrolled) { nav.classList.toggle("is-scrolled", isScrolled); scrolled = isScrolled; }
+    progress.style.transform = "scaleX(" + Math.min(1, y / scrollMax).toFixed(4) + ")";
 
     if (!reduceMotion) {
-      parallaxText.forEach(function (el) {
-        el.style.transform = "translate3d(0," + (y * parseFloat(el.dataset.parallax)) + "px,0)";
-      });
-      parallaxImgs.forEach(function (el) {
-        var r = el.getBoundingClientRect();
-        if (r.bottom < 0 || r.top > vh) return;
-        var offset = ((r.top + r.height / 2) - vh / 2) / vh; // -1 … 1
-        el.style.setProperty("--py", (offset * -40).toFixed(1) + "px");
+      parallaxImgs.forEach(function (p) {
+        if (!p.img) return;
+        var center = p.top + p.h / 2 - y;
+        if (center < -p.h || center > vh + p.h) return; // off screen
+        var offset = (center - vh / 2) / vh; // -1 … 1
+        p.img.style.transform = "translate3d(0," + (offset * -40).toFixed(1) + "px,0) scale(1.14)";
       });
     }
     ticking = false;
   }
-  window.addEventListener("scroll", function () {
+  function requestScroll() {
     if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
-  }, { passive: true });
+  }
+  window.addEventListener("scroll", requestScroll, { passive: true });
+  window.addEventListener("resize", function () { measure(); requestScroll(); });
+  window.addEventListener("load", function () { measure(); requestScroll(); });
+  if ("ResizeObserver" in window) new ResizeObserver(function () { measure(); }).observe(document.body);
+  measure();
   onScroll();
 
   /* ---------- Products ---------- */
@@ -179,16 +194,27 @@
   /* Tilt + shine */
   if (finePointer && !reduceMotion) {
     grid.querySelectorAll(".product").forEach(function (card) {
-      card.addEventListener("mousemove", function (e) {
-        var r = card.getBoundingClientRect();
-        var x = (e.clientX - r.left) / r.width;
-        var y = (e.clientY - r.top) / r.height;
-        card.classList.add("is-tilting");
-        card.style.transform = "translateY(-6px) rotateX(" + ((0.5 - y) * 7).toFixed(2) + "deg) rotateY(" + ((x - 0.5) * 9).toFixed(2) + "deg)";
+      var rect = null, px = 0, py = 0, frame = 0;
+      function apply() {
+        frame = 0;
+        var x = (px - rect.left) / rect.width;
+        var y = (py - rect.top) / rect.height;
+        card.style.transform = "translate3d(0,-6px,0) rotateX(" + ((0.5 - y) * 7).toFixed(2) + "deg) rotateY(" + ((x - 0.5) * 9).toFixed(2) + "deg)";
         card.style.setProperty("--mx", (x * 100).toFixed(1) + "%");
         card.style.setProperty("--my", (y * 100).toFixed(1) + "%");
+      }
+      card.addEventListener("mouseenter", function () {
+        rect = card.getBoundingClientRect(); // measure once per hover
+        card.classList.add("is-tilting");
+      });
+      card.addEventListener("mousemove", function (e) {
+        if (!rect) rect = card.getBoundingClientRect();
+        px = e.clientX; py = e.clientY;
+        if (!frame) frame = requestAnimationFrame(apply);
       });
       card.addEventListener("mouseleave", function () {
+        if (frame) cancelAnimationFrame(frame);
+        frame = 0; rect = null;
         card.classList.remove("is-tilting");
         card.style.transform = "";
       });
@@ -300,27 +326,35 @@
   }
   restart();
 
-  /* ---------- Custom cursor ---------- */
+  /* ---------- Custom cursor (loop sleeps when the pointer is still) ---------- */
   if (finePointer && !reduceMotion) {
     var dot = document.getElementById("cursor");
     var ring = document.getElementById("cursorRing");
     var mx = -100, my = -100, rx = -100, ry = -100;
+    var cursorFrame = 0, lastT = 0;
 
+    function follow(t) {
+      var dt = lastT ? Math.min(64, t - lastT) : 16;
+      lastT = t;
+      var k = 1 - Math.pow(1 - 0.16, dt / 16.67); // same feel at 60Hz and 120Hz
+      rx += (mx - rx) * k;
+      ry += (my - ry) * k;
+      ring.style.transform = "translate3d(" + rx.toFixed(1) + "px," + ry.toFixed(1) + "px,0)";
+      if (Math.abs(mx - rx) > 0.3 || Math.abs(my - ry) > 0.3) cursorFrame = requestAnimationFrame(follow);
+      else { cursorFrame = 0; lastT = 0; }
+    }
     document.addEventListener("mousemove", function (e) {
       mx = e.clientX; my = e.clientY;
       dot.style.transform = "translate3d(" + mx + "px," + my + "px,0)";
-      document.body.classList.add("has-cursor");
-    });
+      if (!document.body.classList.contains("has-cursor")) document.body.classList.add("has-cursor");
+      if (!cursorFrame) cursorFrame = requestAnimationFrame(follow);
+    }, { passive: true });
     document.addEventListener("mouseleave", function () { document.body.classList.remove("has-cursor"); });
+    var hoverOn = false;
     document.addEventListener("mouseover", function (e) {
-      ring.classList.toggle("is-hover", !!e.target.closest("a, button, .product, .filter"));
+      var on = !!e.target.closest("a, button, .product, .filter");
+      if (on !== hoverOn) { ring.classList.toggle("is-hover", on); hoverOn = on; }
     });
-    (function follow() {
-      rx += (mx - rx) * 0.16;
-      ry += (my - ry) * 0.16;
-      ring.style.transform = "translate3d(" + rx + "px," + ry + "px,0)";
-      requestAnimationFrame(follow);
-    })();
   }
 
   /* ---------- Hero: cinematic slideshow (4s per slide) ---------- */
@@ -438,40 +472,63 @@
   // Pause while the tab is hidden
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) { clearTimeout(slideTimer); hero.classList.add("is-paused"); }
-    else { hero.classList.remove("is-paused"); markThumb(slideAt); scheduleSlide(); }
+    else if (heroVisible) { hero.classList.remove("is-paused"); markThumb(slideAt); scheduleSlide(); }
   });
 
-  // Mouse depth + cursor spotlight
+  // Mouse depth + cursor spotlight (batched to one write per frame)
   if (finePointer && !reduceMotion) {
-    var depthEls = hero.querySelectorAll("[data-depth]");
-    hero.addEventListener("mousemove", function (e) {
-      var r = hero.getBoundingClientRect();
-      var x = (e.clientX - r.left) / r.width - 0.5;
-      var y = (e.clientY - r.top) / r.height - 0.5;
-      hero.style.setProperty("--sx", ((x + 0.5) * 100).toFixed(1) + "%");
-      hero.style.setProperty("--sy", ((y + 0.5) * 100).toFixed(1) + "%");
-      depthEls.forEach(function (el) {
-        var d = parseFloat(el.dataset.depth);
-        el.style.setProperty("--dx", (x * d).toFixed(1) + "px");
-        el.style.setProperty("--dy", (y * d).toFixed(1) + "px");
-      });
+    var depthEls = Array.prototype.map.call(hero.querySelectorAll("[data-depth]"), function (el) {
+      return { el: el, d: parseFloat(el.dataset.depth) };
     });
+    var spot = hero.querySelector(".hero__spot");
+    var heroRect = null, hx = 0, hy = 0, heroFrame = 0;
+    function applyHero() {
+      heroFrame = 0;
+      var x = (hx - heroRect.left) / heroRect.width - 0.5;
+      var y = (hy - heroRect.top) / heroRect.height - 0.5;
+      spot.style.transform = "translate3d(" + (hx - heroRect.left).toFixed(0) + "px," + (hy - heroRect.top).toFixed(0) + "px,0)";
+      depthEls.forEach(function (p) {
+        p.el.style.translate = (x * p.d).toFixed(1) + "px " + (y * p.d).toFixed(1) + "px";
+      });
+    }
+    hero.addEventListener("mouseenter", function () { heroRect = hero.getBoundingClientRect(); hero.classList.add("has-spot"); });
+    hero.addEventListener("mousemove", function (e) {
+      if (!heroRect) { heroRect = hero.getBoundingClientRect(); hero.classList.add("has-spot"); }
+      hx = e.clientX; hy = e.clientY;
+      if (!heroFrame) heroFrame = requestAnimationFrame(applyHero);
+    });
+    window.addEventListener("scroll", function () { heroRect = null; }, { passive: true });
     hero.addEventListener("mouseleave", function () {
-      depthEls.forEach(function (el) { el.style.setProperty("--dx", "0px"); el.style.setProperty("--dy", "0px"); });
+      heroRect = null;
+      hero.classList.remove("has-spot");
+      depthEls.forEach(function (p) { p.el.style.translate = ""; });
     });
   }
 
-  /* ---------- Hero particles: drifting gold "scent" motes ---------- */
+  // Pause the hero (slides, shimmer, glow) while it is scrolled out of view
+  var heroVisible = true;
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      heroVisible = entries[0].isIntersecting;
+      hero.classList.toggle("is-offscreen", !heroVisible);
+      hero.classList.toggle("is-paused", !heroVisible);
+      if (!heroVisible) clearTimeout(slideTimer);
+      else if (root.classList.contains("is-loaded") && !document.hidden) { markThumb(slideAt); scheduleSlide(); }
+    }).observe(hero);
+  }
+
+  /* ---------- Hero particles: drifting "scent" motes (time-based, sprite-drawn) ---------- */
   var canvas = document.getElementById("particles");
   if (canvas && !reduceMotion) {
     var ctx = canvas.getContext("2d");
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var W, H, motes = [];
-    var running = true;
+    // Soft glows don't need retina resolution — 1x keeps fill-rate low
+    var dpr = 1;
+    var W = 0, H = 0, motes = [];
+    var loopId = 0, prevT = 0, inView = true;
 
     function resize() {
       W = canvas.offsetWidth; H = canvas.offsetHeight;
-      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     function spawn(initial) {
@@ -479,51 +536,67 @@
         x: W * (0.35 + Math.random() * 0.65),
         y: initial ? Math.random() * H : H + 10,
         r: 0.6 + Math.random() * 2.2,
-        vy: 0.15 + Math.random() * 0.45,
+        vy: 9 + Math.random() * 27,          // px per second
         sway: Math.random() * Math.PI * 2,
         a: 0.15 + Math.random() * 0.55,
       };
     }
+
+    // Pre-render one glowing dot per tint; drawing an image is far cheaper than a gradient per mote
+    var sprite = document.createElement("canvas");
+    sprite.width = sprite.height = 64;
+    function paintSprite() {
+      var hex = (hero.style.getPropertyValue("--tint") || "#F0D7A0").trim().replace("#", "");
+      var n = parseInt(hex, 16);
+      var rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(function (v) { return Math.round(v + (255 - v) * 0.45); }).join(",");
+      var sc = sprite.getContext("2d");
+      sc.clearRect(0, 0, 64, 64);
+      var g = sc.createRadialGradient(32, 32, 0, 32, 32, 32);
+      g.addColorStop(0, "rgba(" + rgb + ",1)");
+      g.addColorStop(1, "rgba(" + rgb + ",0)");
+      sc.fillStyle = g;
+      sc.fillRect(0, 0, 64, 64);
+    }
+    var lastTint = "";
+    new MutationObserver(function () {
+      var t = hero.style.getPropertyValue("--tint");
+      if (t !== lastTint) { lastTint = t; paintSprite(); }
+    }).observe(hero, { attributes: true, attributeFilter: ["style"] });
+
     resize();
-    var count = W < 700 ? 34 : 70;
+    paintSprite();
+    var count = W < 700 ? 26 : 60;
     for (var i = 0; i < count; i++) motes.push(spawn(true));
     window.addEventListener("resize", resize);
 
-    new IntersectionObserver(function (entries) {
-      running = entries[0].isIntersecting;
-      if (running) requestAnimationFrame(draw);
-    }).observe(canvas);
-
-    var tintRgb = "240,215,160";
-    function readTint() {
-      var hex = (hero.style.getPropertyValue("--tint") || "#F0D7A0").trim().replace("#", "");
-      var n = parseInt(hex, 16);
-      // lift toward white so motes stay luminous
-      tintRgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(function (v) { return Math.round(v + (255 - v) * 0.45); }).join(",");
-    }
-    readTint();
-    new MutationObserver(readTint).observe(hero, { attributes: true, attributeFilter: ["style"] });
-
-    function draw() {
-      if (!running) return;
+    function draw(t) {
+      var dt = prevT ? Math.min(0.05, (t - prevT) / 1000) : 0.016;
+      prevT = t;
       ctx.clearRect(0, 0, W, H);
       for (var i = 0; i < motes.length; i++) {
         var m = motes[i];
-        m.y -= m.vy;
-        m.sway += 0.01;
-        m.x += Math.sin(m.sway) * 0.3;
+        m.y -= m.vy * dt;
+        m.sway += 0.6 * dt;
+        m.x += Math.sin(m.sway) * 18 * dt;
         if (m.y < -10) motes[i] = m = spawn(false);
         var fade = Math.min(1, m.y / (H * 0.35)); // dissolve near the top
-        var g = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.r * 4);
-        g.addColorStop(0, "rgba(" + tintRgb + "," + (m.a * fade) + ")");
-        g.addColorStop(1, "rgba(" + tintRgb + ",0)");
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(m.x, m.y, m.r * 4, 0, Math.PI * 2);
-        ctx.fill();
+        if (fade <= 0) continue;
+        var size = m.r * 8;
+        ctx.globalAlpha = m.a * fade;
+        ctx.drawImage(sprite, m.x - size / 2, m.y - size / 2, size, size);
       }
-      requestAnimationFrame(draw);
+      ctx.globalAlpha = 1;
+      loopId = requestAnimationFrame(draw);
     }
-    requestAnimationFrame(draw);
+    function start() { if (!loopId) { prevT = 0; loopId = requestAnimationFrame(draw); } }
+    function stop() { if (loopId) { cancelAnimationFrame(loopId); loopId = 0; } }
+
+    new IntersectionObserver(function (entries) {
+      inView = entries[0].isIntersecting;
+      inView && !document.hidden ? start() : stop();
+    }).observe(canvas);
+    document.addEventListener("visibilitychange", function () {
+      !document.hidden && inView ? start() : stop();
+    });
   }
 })();
