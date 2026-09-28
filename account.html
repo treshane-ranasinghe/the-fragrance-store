@@ -52,29 +52,64 @@
     <!-- Loading -->
     <p class="ac__loading" id="acLoading">Loading…</p>
 
-    <!-- Sign in -->
+    <!-- Sign in / Sign up -->
     <section class="ac__signin" id="acSignin" hidden>
-      <form class="ac__card" id="signinForm" novalidate>
-        <p class="eyebrow">My Account</p>
-        <h1 class="co__title">Welcome <em>back</em></h1>
-        <p class="ac__lead">Sign in to see your orders and check out faster.</p>
-        <div class="field">
-          <label for="siLogin">Phone number or email</label>
-          <input id="siLogin" autocomplete="username" inputmode="email" placeholder="077 123 4567" required />
+      <div class="ac__card ac__auth">
+        <div class="ac__tabs" role="tablist" aria-label="Account">
+          <button type="button" role="tab" id="tabSignin" aria-controls="signinForm" aria-selected="true">Sign in</button>
+          <button type="button" role="tab" id="tabSignup" aria-controls="signupForm" aria-selected="false" tabindex="-1">Sign up</button>
         </div>
-        <div class="field">
-          <label for="siPassword">Password</label>
-          <div class="co__pw">
-            <input id="siPassword" type="password" autocomplete="current-password" required />
-            <button type="button" class="co__pwtoggle" aria-label="Show password" aria-pressed="false">Show</button>
+
+        <form id="signinForm" role="tabpanel" aria-labelledby="tabSignin" novalidate>
+          <h1 class="co__title">Welcome <em>back</em></h1>
+          <p class="ac__lead">Sign in to see your orders and check out faster.</p>
+          <div class="field">
+            <label for="siLogin">Phone number or email</label>
+            <input id="siLogin" autocomplete="username" inputmode="email" placeholder="077 123 4567" required />
           </div>
-        </div>
-        <p class="co__error" id="siError" role="alert" hidden></p>
-        <button type="submit" class="btn btn--gold btn--block" id="siBtn">Sign in</button>
-        <p class="ac__small"><a href="#" class="co__link js-whatsapp" data-msg="Hello, I've forgotten the password for my account.">Forgotten your password?</a> Message us and we'll reset it.</p>
-        <hr class="ac__rule" />
-        <p class="ac__small">New here? There's no need to sign up first — just check out as a guest, and you can save your details after your first order.</p>
-      </form>
+          <div class="field">
+            <label for="siPassword">Password</label>
+            <div class="co__pw">
+              <input id="siPassword" type="password" autocomplete="current-password" required />
+              <button type="button" class="co__pwtoggle" aria-label="Show password" aria-pressed="false">Show</button>
+            </div>
+          </div>
+          <p class="co__error" id="siError" role="alert" hidden></p>
+          <button type="submit" class="btn btn--gold btn--block" id="siBtn">Sign in</button>
+          <p class="ac__small"><a href="#" class="co__link js-whatsapp" data-msg="Hello, I've forgotten the password for my account.">Forgotten your password?</a> Message us and we'll reset it.</p>
+          <hr class="ac__rule" />
+          <p class="ac__small">New here? <button type="button" class="co__link" data-tab="signup">Create an account</button></p>
+        </form>
+
+        <form id="signupForm" role="tabpanel" aria-labelledby="tabSignup" novalidate hidden>
+          <h1 class="co__title">Create an <em>account</em></h1>
+          <p class="ac__lead">Track your orders and check out faster next time.</p>
+          <div class="field">
+            <label for="suName">Full name</label>
+            <input id="suName" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="suPhone">Mobile number <small>you'll sign in with this</small></label>
+            <input id="suPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="077 123 4567" required />
+          </div>
+          <div class="field">
+            <label for="suEmail">Email <small>optional</small></label>
+            <input id="suEmail" type="email" autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="suPassword">Password <small>8+ characters</small></label>
+            <div class="co__pw">
+              <input id="suPassword" type="password" autocomplete="new-password" minlength="8" required />
+              <button type="button" class="co__pwtoggle" aria-label="Show password" aria-pressed="false">Show</button>
+            </div>
+          </div>
+          <p class="co__error" id="suError" role="alert" hidden></p>
+          <button type="submit" class="btn btn--gold btn--block" id="suBtn">Create account</button>
+          <p class="ac__small">No account needed to shop — you can always <a href="index.html#signatures" class="co__link">check out as a guest</a>.</p>
+          <hr class="ac__rule" />
+          <p class="ac__small">Already have an account? <button type="button" class="co__link" data-tab="signin">Sign in</button></p>
+        </form>
+      </div>
     </section>
 
     <!-- Signed in -->
@@ -153,13 +188,6 @@
       </div>
     </section>
 
-    <!-- Static mode -->
-    <section class="co__empty" id="acUnavailable" hidden>
-      <p class="eyebrow">My Account</p>
-      <h1 class="section__title">Accounts are <em>offline</em></h1>
-      <p>Accounts need the store server. You can still shop and check out as a guest.</p>
-      <a href="index.html#signatures" class="btn btn--gold">Continue shopping</a>
-    </section>
   </main>
 
   <div class="ac__toast" id="acToast" role="status" aria-live="polite"></div>

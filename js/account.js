@@ -62,16 +62,67 @@
   function showError(id, msg) { $(id).textContent = msg; $(id).hidden = !msg; }
 
   function show(view) {
-    ["acLoading", "acSignin", "acHome", "acUnavailable"].forEach(function (id) { $(id).hidden = id !== view; });
+    ["acLoading", "acSignin", "acHome"].forEach(function (id) { $(id).hidden = id !== view; });
   }
 
-  /* ---------- Sign in ---------- */
+  /* ---------- Sign in / Sign up tabs ---------- */
+  function setTab(name, focus) {
+    var signup = name === "signup";
+    $("signinForm").hidden = signup;
+    $("signupForm").hidden = !signup;
+    [["tabSignin", !signup], ["tabSignup", signup]].forEach(function (t) {
+      $(t[0]).setAttribute("aria-selected", String(t[1]));
+      $(t[0]).tabIndex = t[1] ? 0 : -1;
+    });
+    document.title = (signup ? "Sign up" : "Sign in") + " — The Fragrance Store";
+    history.replaceState(null, "", location.pathname + location.search + (signup ? "#signup" : ""));
+    if (focus !== false) (signup ? $("suName") : $("siLogin")).focus();
+  }
+  $("tabSignin").addEventListener("click", function () { setTab("signin"); });
+  $("tabSignup").addEventListener("click", function () { setTab("signup"); });
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-tab]");
+    if (t) setTab(t.dataset.tab);
+  });
+  // Arrow keys move between the two tabs
+  document.querySelector(".ac__tabs").addEventListener("keydown", function (e) {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    var toSignup = $("tabSignin").getAttribute("aria-selected") === "true";
+    setTab(toSignup ? "signup" : "signin", false);
+    $(toSignup ? "tabSignup" : "tabSignin").focus();
+  });
+
   function showSignin() {
     show("acSignin");
-    document.title = "Sign in — The Fragrance Store";
-    $("siLogin").focus();
+    setTab(location.hash === "#signup" ? "signup" : "signin");
   }
 
+  $("signupForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    showError("suError", "");
+    var name = $("suName").value.trim();
+    var phone = $("suPhone").value.trim();
+    var pw = $("suPassword").value;
+    if (!name) { showError("suError", "Please enter your name."); $("suName").focus(); return; }
+    if (!/^(?:\+94|94|0)\d{9}$/.test(phone.replace(/[\s\-()]/g, ""))) {
+      showError("suError", "Enter a valid Sri Lankan mobile number, e.g. 077 123 4567."); $("suPhone").focus(); return;
+    }
+    if (pw.length < 8) { showError("suError", "Choose a password of at least 8 characters."); $("suPassword").focus(); return; }
+    var btn = $("suBtn");
+    btn.disabled = true;
+    btn.textContent = "Creating your account…";
+    accounts.register({ name: name, phone: phone, email: $("suEmail").value.trim(), password: pw }).then(function (me) {
+      $("suPassword").value = "";
+      if (next) { location.href = next; return; }
+      history.replaceState(null, "", location.pathname + location.search);
+      showHome(me);
+      toast("Welcome, " + me.name.split(" ")[0] + " — your account is ready");
+    }, function (ex) {
+      showError("suError", ex.message);
+    }).then(function () { btn.disabled = false; btn.textContent = "Create account"; });
+  });
+
+  /* ---------- Sign in ---------- */
   $("signinForm").addEventListener("submit", function (e) {
     e.preventDefault();
     showError("siError", "");
@@ -212,12 +263,8 @@
   });
 
   /* ---------- Boot ---------- */
-  if (!accounts.available) {
-    show("acUnavailable");
-  } else {
-    accounts.me().then(function (account) {
-      if (account && next) { location.href = next; return; }
-      if (account) showHome(account); else showSignin();
-    });
-  }
+  accounts.me().then(function (account) {
+    if (account && next) { location.href = next; return; }
+    if (account) showHome(account); else showSignin();
+  });
 })();

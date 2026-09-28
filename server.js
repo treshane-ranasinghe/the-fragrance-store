@@ -420,6 +420,31 @@ async function api(req, res, url) {
     return send(res, 201, publicCustomer(customer), { "Set-Cookie": customerCookie(req, token, CUSTOMER_DAYS * 86400) });
   }
 
+  // Sign up directly (without an order first)
+  if (route === "POST /api/account/register") {
+    const key = "register:" + clientIp(req);
+    if (isLockedOut(key)) throw new HttpError(429, "Too many sign-ups from this connection. Try again in 15 minutes.");
+    const body = await readBody(req);
+    const name = str(body.name, 120, true, "Your name");
+    const phone = normalisePhone(body.phone);
+    if (!phone) throw new HttpError(400, "Enter a valid Sri Lankan mobile number, e.g. 077 123 4567.");
+    const email = str(body.email, 160, false, "Email").toLowerCase();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new HttpError(400, "That email doesn't look right.");
+    const password = String(body.password || "");
+    if (password.length < MIN_CUSTOMER_PASSWORD) throw new HttpError(400, "Choose a password of at least " + MIN_CUSTOMER_PASSWORD + " characters.");
+    const list = customers();
+    if (list.some((x) => x.phone === phone)) throw new HttpError(409, "There's already an account for this number. Sign in instead.");
+    if (email && list.some((x) => x.email === email)) throw new HttpError(409, "That email is already used by another account.");
+    noteFailure(key); // counts sign-ups per connection, not just failures
+    const customer = Object.assign({
+      id: crypto.randomUUID(), name, phone, email: email || null, address: null, createdAt: new Date().toISOString(),
+    }, hashPassword(password));
+    list.push(customer);
+    writeJson(FILES.customers, list);
+    const token = newCustomerSession(customer.id);
+    return send(res, 201, publicCustomer(customer), { "Set-Cookie": customerCookie(req, token, CUSTOMER_DAYS * 86400) });
+  }
+
   if (route === "POST /api/account/login") {
     const key = "customer:" + clientIp(req);
     if (isLockedOut(key)) throw new HttpError(429, "Too many attempts. Try again in 15 minutes.");

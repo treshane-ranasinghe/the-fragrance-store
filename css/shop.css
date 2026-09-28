@@ -440,9 +440,6 @@
 .ac__loading { text-align: center; color: var(--text-dim); padding: 80px 0; }
 .ac__card { padding: 30px 28px; background: var(--ink); border: 1px solid var(--line-dark); }
 .ac__signin { display: grid; place-items: center; padding: 10px 0 40px; }
-.ac__signin .ac__card { width: min(460px, 100%); display: grid; gap: 18px; }
-.ac__signin .eyebrow { margin: 0; }
-.ac__signin .co__title { margin-bottom: -6px; }
 .ac__lead { margin: 0; color: var(--text-dim); }
 .ac__small { margin: 0; font-size: 13px; color: var(--text-dim); line-height: 1.6; }
 .ac__rule { border: 0; border-top: 1px solid var(--line-dark); margin: 4px 0; width: 100%; }
@@ -508,3 +505,18 @@
   .ac__steps li { font-size: 11px; }
 }
 @media (prefers-reduced-motion: reduce) { .ac__toast { transition: none; } }
+
+/* Sign in / Sign up tabs */
+.ac__auth { width: min(460px, 100%); }
+.ac__auth form { display: grid; gap: 18px; }
+.ac__tabs { display: grid; grid-template-columns: 1fr 1fr; margin: -30px -28px 28px; border-bottom: 1px solid var(--line-dark); }
+.ac__tabs button {
+  padding: 18px 0; font-size: 11px; font-weight: 500; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--text-dim); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .3s, border-color .3s;
+}
+.ac__tabs button[aria-selected="true"] { color: var(--text-light); border-bottom-color: var(--gold); }
+.ac__tabs button:hover { color: var(--gold-light); }
+.ac__tabs button:focus-visible { outline: 1px solid var(--gold); outline-offset: -4px; }
+.ac__auth .co__title { margin-bottom: -6px; }
+.ac__auth .field label small { letter-spacing: .06em; text-transform: none; font-size: 12px; opacity: .8; }
+@media (max-width: 560px) { .ac__tabs { margin: -24px -18px 24px; } }
