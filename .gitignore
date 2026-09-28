@@ -1,0 +1,5 @@
+# Live store data — orders, admin logins, catalogue edits and uploads
+data/
+images/uploads/
+node_modules/
+.DS_Store

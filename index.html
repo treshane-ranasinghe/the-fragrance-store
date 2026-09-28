@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&family=Nunito:wght@700;800;900&family=Antonio:wght@300;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/shop.css" />
   <script>
     document.documentElement.classList.add("js");
     // Try other extensions before falling back to the gold placeholder
@@ -80,12 +81,16 @@
         <span class="logo__word">S<span class="logo__bottle" aria-hidden="true"><svg viewBox="0 0 108 172"><path d="M31 3Q54-1 77 3V55H80V59H108V172H0V59H27V55H31Z"/></svg><i></i><i></i><i></i><i></i></span><span class="sr-only">T</span>ORE</span>
       </a>
 
+      <div class="nav__actions">
       <nav class="nav__links nav__links--right" aria-label="Secondary">
         <a href="#notes">The Art of Scent</a>
         <a href="#visit">Visit</a>
         <a href="#" class="btn btn--ghost btn--sm js-whatsapp" data-msg="Hello, I'd like to enquire about a fragrance.">Enquire</a>
       </nav>
       <a href="#" class="nav__wa js-whatsapp" data-msg="Hello, I'd like to enquire about a fragrance." aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 001.8-1.2 2.2 2.2 0 00.1-1.2c0-.1-.2-.2-.4-.3z"/></svg></a>
+      <a href="account.html" class="nav__bag nav__account" aria-label="My account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></svg></a>
+      <button type="button" class="nav__bag" data-bag-open aria-label="Open bag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 12.2a1 1 0 01-1 .8H7.2a1 1 0 01-1-.8zM9 8V6.5a3 3 0 016 0V8"/></svg><b data-bag-count>0</b></button>
+      </div>
     </div>
 
     <!-- Mobile menu -->
@@ -96,8 +101,9 @@
         <a href="#maison" style="--i:2"><span>03</span>Our Story</a>
         <a href="#notes" style="--i:3"><span>04</span>The Art of Scent</a>
         <a href="#visit" style="--i:4"><span>05</span>Visit the Boutique</a>
+        <a href="account.html" style="--i:5"><span>06</span>My Account</a>
       </nav>
-      <div class="drawer__foot" style="--i:5">
+      <div class="drawer__foot" style="--i:6">
         <a href="#" class="btn btn--gold btn--block js-whatsapp" data-msg="Hello, I'd like to enquire about a fragrance.">Enquire on WhatsApp</a>
         <div class="drawer__social">
           <a href="#" class="js-instagram">Instagram</a>
@@ -258,6 +264,24 @@
             <button class="filter" data-filter="arabian" role="tab" aria-selected="false">Arabian</button>
           </div>
         </header>
+
+        <div class="shopbar reveal">
+          <label class="shopbar__search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+            <span class="sr-only">Search fragrances</span>
+            <input type="search" id="shopSearch" placeholder="Search by name, house or note" autocomplete="off" />
+          </label>
+          <p class="shopbar__count" id="shopCount" aria-live="polite"></p>
+          <label class="shopbar__sort">
+            <span>Sort</span>
+            <select id="shopSort">
+              <option value="featured">Featured</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
+              <option value="name">Name: A–Z</option>
+            </select>
+          </label>
+        </div>
 
         <div class="products" id="products"><!-- Rendered by js/main.js --></div>
 
@@ -477,8 +501,20 @@
         <p class="modal__meta" id="modalMeta"></p>
         <p class="modal__desc" id="modalDesc"></p>
         <dl class="modal__notes" id="modalNotes"></dl>
+        <fieldset class="sizes" id="modalSizes">
+          <legend>Size</legend>
+          <div class="sizes__opts" id="modalSizeOpts"></div>
+        </fieldset>
         <p class="modal__price" id="modalPrice"></p>
-        <a href="#" class="btn btn--gold btn--block" id="modalEnquire" target="_blank" rel="noopener">Enquire on WhatsApp</a>
+        <div class="modal__buy" id="modalBuy">
+          <div class="qty qty--lg" role="group" aria-label="Quantity">
+            <button type="button" id="modalDec" aria-label="Decrease quantity">&minus;</button>
+            <span id="modalQty" aria-live="polite">1</span>
+            <button type="button" id="modalInc" aria-label="Increase quantity">+</button>
+          </div>
+          <button type="button" class="btn btn--gold" id="modalAdd">Add to Bag</button>
+        </div>
+        <a href="#" class="modal__enquire" id="modalEnquire" target="_blank" rel="noopener">Questions? Enquire on WhatsApp</a>
       </div>
     </div>
   </div>
@@ -488,7 +524,10 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 001.8-1.2 2.2 2.2 0 00.1-1.2c0-.1-.2-.2-.4-.3z"/></svg>
   </a>
 
+  <script src="js/settings.js"></script>
   <script src="js/products.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

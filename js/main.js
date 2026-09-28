@@ -6,6 +6,7 @@
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   var root = document.documentElement;
+  var cart = window.TFS.cart;
 
   function waLink(msg) {
     return "https://wa.me/" + STORE.whatsapp + "?text=" + encodeURIComponent(msg);
@@ -141,55 +142,118 @@
   /* ---------- Products ---------- */
   var grid = document.getElementById("products");
 
+  function pricedSizes(p) {
+    return (p.sizes || []).filter(function (x) { return x.price != null; });
+  }
+  function fromPrice(p) {
+    var prices = pricedSizes(p).map(function (x) { return x.price; });
+    return prices.length ? Math.min.apply(null, prices) : null;
+  }
+  function priceLabel(p) {
+    var from = fromPrice(p);
+    if (from == null) return "<small>Price on request</small>";
+    return (pricedSizes(p).length > 1 ? "<small>From</small> " : "") + escapeHtml(cart.money(from));
+  }
+  function addLabel(p) {
+    if (p.inStock === false) return "Sold out";
+    if (fromPrice(p) == null) return "Enquire";
+    return pricedSizes(p).length > 1 ? "Choose size" : "Add to bag";
+  }
+
   grid.innerHTML = PRODUCTS.map(function (p, i) {
+    var soldOut = p.inStock === false;
     return (
-      '<article class="product reveal" data-id="' + p.id + '" data-tags="' + p.tags.join(" ") + '" tabindex="0" role="button" aria-label="View ' + escapeHtml(p.name) + '">' +
+      '<article class="product reveal' + (soldOut ? " is-soldout" : "") + '" data-id="' + p.id + '" data-tags="' + p.tags.join(" ") + '" data-order="' + i + '">' +
         '<div class="product__media">' +
-          (p.badge ? '<span class="product__tag">' + escapeHtml(p.badge) + "</span>" : "") +
-          '<img src="images/products/' + p.id + '.jpg" alt="' + escapeHtml(p.house + " " + p.name) + '" loading="lazy" onerror="imgFallback(this)" />' +
+          (soldOut ? '<span class="product__tag">Sold out</span>' : p.badge ? '<span class="product__tag">' + escapeHtml(p.badge) + "</span>" : "") +
+          '<img src="' + escapeHtml(window.TFS.img(p)) + '" alt="' + escapeHtml(p.house + " " + p.name) + '" loading="lazy" onerror="imgFallback(this)" />' +
         "</div>" +
         '<div class="product__body">' +
           '<p class="product__house">' + escapeHtml(p.house) + "</p>" +
-          '<h3 class="product__name">' + escapeHtml(p.name) + "</h3>" +
+          '<h3 class="product__name"><button type="button" class="product__open">' + escapeHtml(p.name) + "</button></h3>" +
           '<p class="product__notes">' + escapeHtml(p.notes.top + " · " + p.notes.base) + "</p>" +
           '<div class="product__foot">' +
-            '<span class="product__price">' + (p.price ? escapeHtml(p.price) : "<small>Price on request</small>") + "</span>" +
-            '<span class="link-arrow">Discover</span>' +
+            '<span class="product__price">' + priceLabel(p) + "</span>" +
+            '<button type="button" class="product__add" data-add' + (soldOut ? " disabled" : "") + ' aria-label="' + escapeHtml(addLabel(p) + ": " + p.name) + '">' +
+              '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 12.2a1 1 0 01-1 .8H7.2a1 1 0 01-1-.8zM9 8V6.5a3 3 0 016 0V8"/></svg>' +
+              "<span>" + addLabel(p) + "</span>" +
+            "</button>" +
           "</div>" +
         "</div>" +
       "</article>"
     );
-  }).join("") + '<div class="products__empty" hidden><h3>Arriving soon</h3><p>New additions are on their way. <a class="js-wa-empty" href="' + waLink("Hello, I'm looking for a fragrance.") + '" target="_blank" rel="noopener">Ask us what\'s in store</a>.</p></div>';
+  }).join("") + '<div class="products__empty" hidden><h3>Nothing matches — yet</h3><p>We source on request. <a class="js-wa-empty" href="' + waLink("Hello, I'm looking for a fragrance.") + '" target="_blank" rel="noopener">Ask us to find it for you</a>.</p></div>';
 
-  /* Filters */
+  /* Filter + search + sort */
   var filterBtns = document.querySelectorAll(".filter");
   var emptyState = grid.querySelector(".products__empty");
+  var searchInput = document.getElementById("shopSearch");
+  var sortSelect = document.getElementById("shopSort");
+  var countEl = document.getElementById("shopCount");
+  var cards = Array.prototype.slice.call(grid.querySelectorAll(".product"));
+  var shop = { tag: "all", q: "", sort: "featured" };
 
-  function applyFilter(tag) {
+  function searchText(p) {
+    return [p.house, p.name, p.type, p.notes.top, p.notes.heart, p.notes.base].join(" ").toLowerCase();
+  }
+
+  function renderShop(animate) {
+    var words = shop.q.toLowerCase().split(/\s+/).filter(Boolean);
     var shown = 0;
+
     filterBtns.forEach(function (b) {
-      var on = b.dataset.filter === tag;
+      var on = b.dataset.filter === shop.tag;
       b.classList.toggle("is-active", on);
       b.setAttribute("aria-selected", String(on));
     });
-    grid.querySelectorAll(".product").forEach(function (card) {
-      var match = tag === "all" || card.dataset.tags.split(" ").indexOf(tag) > -1;
+
+    var sorted = cards.slice().sort(function (a, b) {
+      var pa = PRODUCTS[a.dataset.order], pb = PRODUCTS[b.dataset.order];
+      var fa = fromPrice(pa), fb = fromPrice(pb);
+      if (shop.sort === "price-asc" || shop.sort === "price-desc") {
+        if (fa == null) return 1;           // "price on request" always last
+        if (fb == null) return -1;
+        return shop.sort === "price-asc" ? fa - fb : fb - fa;
+      }
+      if (shop.sort === "name") return pa.name.localeCompare(pb.name);
+      return a.dataset.order - b.dataset.order;
+    });
+
+    sorted.forEach(function (card) {
+      var p = PRODUCTS[card.dataset.order];
+      var text = searchText(p);
+      var match = (shop.tag === "all" || p.tags.indexOf(shop.tag) > -1) &&
+        words.every(function (w) { return text.indexOf(w) > -1; });
       card.classList.toggle("is-hidden", !match);
+      grid.insertBefore(card, emptyState);
       if (match) {
         shown++;
-        card.classList.remove("is-visible");
-        void card.offsetWidth; // restart reveal animation
-        card.classList.add("is-visible");
+        if (animate) {
+          card.classList.remove("is-visible");
+          void card.offsetWidth; // restart reveal animation
+          card.classList.add("is-visible");
+        }
       }
     });
     emptyState.hidden = shown > 0;
+    countEl.textContent = shown + (shown === 1 ? " fragrance" : " fragrances");
   }
+
+  function applyFilter(tag) { shop.tag = tag; renderShop(true); }
+
   filterBtns.forEach(function (b) {
     b.addEventListener("click", function () { applyFilter(b.dataset.filter); });
   });
   document.querySelectorAll(".collection[data-filter]").forEach(function (c) {
     c.addEventListener("click", function () { applyFilter(c.dataset.filter); });
   });
+  var searchTimer;
+  searchInput.addEventListener("input", function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function () { shop.q = searchInput.value.trim(); renderShop(false); }, 120);
+  });
+  sortSelect.addEventListener("change", function () { shop.sort = sortSelect.value; renderShop(true); });
+  renderShop(false);
 
   /* Tilt + shine */
   if (finePointer && !reduceMotion) {
@@ -224,24 +288,51 @@
   /* ---------- Product modal ---------- */
   var modal = document.getElementById("modal");
   var lastFocus = null;
+  var sizeOpts = document.getElementById("modalSizeOpts");
+  var modalQtyEl = document.getElementById("modalQty");
+  var modalAdd = document.getElementById("modalAdd");
+  var sel = { p: null, ml: null, qty: 1 };
+
+  function paintSelection() {
+    var p = sel.p;
+    var s = (p.sizes || []).find(function (x) { return x.ml === sel.ml; });
+    var buyable = p.inStock !== false && s && s.price != null;
+    sizeOpts.querySelectorAll("input").forEach(function (inp) { inp.checked = +inp.value === sel.ml; });
+    document.getElementById("modalPrice").textContent =
+      p.inStock === false ? "Sold out" : s && s.price != null ? cart.money(s.price * sel.qty) : "Price on request";
+    modalQtyEl.textContent = sel.qty;
+    document.getElementById("modalDec").disabled = sel.qty <= 1;
+    document.getElementById("modalInc").disabled = sel.qty >= cart.MAX_QTY;
+    document.getElementById("modalBuy").hidden = !buyable;
+    document.getElementById("modalEnquire").classList.toggle("is-primary", !buyable);
+  }
 
   function openModal(id) {
     var p = PRODUCTS.find(function (x) { return x.id === id; });
     if (!p) return;
     lastFocus = document.activeElement;
+    sel = { p: p, ml: (pricedSizes(p)[0] || (p.sizes || [])[0] || {}).ml, qty: 1 };
+
     document.getElementById("modalHouse").textContent = p.house;
     document.getElementById("modalTitle").textContent = p.name;
     document.getElementById("modalMeta").textContent = p.type;
     document.getElementById("modalDesc").textContent = p.description;
-    document.getElementById("modalPrice").textContent = p.price || "Price on request";
     document.getElementById("modalNotes").innerHTML =
       [["Top", p.notes.top], ["Heart", p.notes.heart], ["Base", p.notes.base]].map(function (n) {
         return "<div><dt>" + n[0] + "</dt><dd>" + escapeHtml(n[1]) + "</dd></div>";
       }).join("");
     document.getElementById("modalMedia").innerHTML =
-      '<img src="images/products/' + p.id + '.jpg" alt="' + escapeHtml(p.house + " " + p.name) + '" onerror="imgFallback(this)" />';
+      '<img src="' + escapeHtml(window.TFS.img(p)) + '" alt="' + escapeHtml(p.house + " " + p.name) + '" onerror="imgFallback(this)" />';
     document.getElementById("modalEnquire").href =
       waLink("Hello, I'd like to enquire about " + p.house + " " + p.name + ".");
+
+    var sizes = p.sizes || [];
+    document.getElementById("modalSizes").hidden = !sizes.length;
+    sizeOpts.innerHTML = sizes.map(function (x) {
+      return '<label class="size"><input type="radio" name="modalSize" value="' + x.ml + '"' + (x.price == null ? " disabled" : "") + " />" +
+        "<span><b>" + x.ml + " ml</b><small>" + (x.price == null ? "On request" : escapeHtml(cart.money(x.price))) + "</small></span></label>";
+    }).join("");
+    paintSelection();
 
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
@@ -249,20 +340,37 @@
     modal.querySelector(".modal__close").focus();
   }
 
-  function closeModal() {
+  function closeModal(restoreFocus) {
     modal.classList.remove("is-open");
     modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
-    if (lastFocus) lastFocus.focus();
+    if (restoreFocus !== false && lastFocus) lastFocus.focus();
   }
 
+  sizeOpts.addEventListener("change", function (e) {
+    sel.ml = +e.target.value;
+    paintSelection();
+  });
+  document.getElementById("modalDec").addEventListener("click", function () { sel.qty = Math.max(1, sel.qty - 1); paintSelection(); });
+  document.getElementById("modalInc").addEventListener("click", function () { sel.qty = Math.min(cart.MAX_QTY, sel.qty + 1); paintSelection(); });
+  modalAdd.addEventListener("click", function () {
+    if (!cart.add(sel.p.id, sel.ml, sel.qty)) return;
+    closeModal(false);
+    cart.open();
+  });
+
+  // Card: name/image opens the detail sheet, the bag button quick-adds
   grid.addEventListener("click", function (e) {
     var card = e.target.closest(".product");
-    if (card) openModal(card.dataset.id);
-  });
-  grid.addEventListener("keydown", function (e) {
-    var card = e.target.closest(".product");
-    if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openModal(card.dataset.id); }
+    if (!card) return;
+    var p = PRODUCTS[card.dataset.order];
+    if (e.target.closest("[data-add]")) {
+      var sizes = pricedSizes(p);
+      if (p.inStock !== false && sizes.length === 1 && cart.add(p.id, sizes[0].ml, 1)) cart.open();
+      else openModal(p.id);
+      return;
+    }
+    openModal(p.id);
   });
   modal.querySelectorAll("[data-close]").forEach(function (el) { el.addEventListener("click", closeModal); });
   document.addEventListener("keydown", function (e) {

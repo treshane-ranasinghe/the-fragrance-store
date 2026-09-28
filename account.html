@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>My Account — The Fragrance Store</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#0B0A09" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&family=Nunito:wght@700;800;900&family=Antonio:wght@300;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/shop.css" />
+  <script>
+    document.documentElement.classList.add("js");
+    function imgFallback(img) {
+      var exts = ["jpg", "png", "jpeg", "webp"];
+      var src = img.getAttribute("src");
+      var m = src.match(/^(.*)\.(\w+)$/);
+      if (!m) { img.remove(); return; }
+      var tried = (img.dataset.tried || m[2]).split(",");
+      var next = exts.filter(function (e) { return tried.indexOf(e) === -1; })[0];
+      if (!next) { img.remove(); return; }
+      img.dataset.tried = tried.concat(next).join(",");
+      img.src = m[1] + "." + next;
+    }
+  </script>
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
+</head>
+<body data-page="account" class="co-page">
+
+  <header class="co-head">
+    <div class="container co-head__inner">
+      <a href="index.html#signatures" class="co-head__back">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        <span>Back to the shop</span>
+      </a>
+      <a href="index.html" class="logo" aria-label="The Fragrance Store — home">
+        <span class="logo__top">The Fragrance</span>
+        <span class="logo__word">S<span class="logo__bottle" aria-hidden="true"><svg viewBox="0 0 108 172"><path d="M31 3Q54-1 77 3V55H80V59H108V172H0V59H27V55H31Z"/></svg><i></i><i></i><i></i><i></i></span><span class="sr-only">T</span>ORE</span>
+      </a>
+      <a href="checkout.html" class="co-head__secure co-head__bag" aria-label="Go to checkout">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 12.2a1 1 0 01-1 .8H7.2a1 1 0 01-1-.8zM9 8V6.5a3 3 0 016 0V8"/></svg>
+        <span>Bag <b data-bag-count>0</b></span>
+      </a>
+    </div>
+  </header>
+
+  <main class="co container ac" id="top">
+
+    <!-- Loading -->
+    <p class="ac__loading" id="acLoading">Loading…</p>
+
+    <!-- Sign in -->
+    <section class="ac__signin" id="acSignin" hidden>
+      <form class="ac__card" id="signinForm" novalidate>
+        <p class="eyebrow">My Account</p>
+        <h1 class="co__title">Welcome <em>back</em></h1>
+        <p class="ac__lead">Sign in to see your orders and check out faster.</p>
+        <div class="field">
+          <label for="siLogin">Phone number or email</label>
+          <input id="siLogin" autocomplete="username" inputmode="email" placeholder="077 123 4567" required />
+        </div>
+        <div class="field">
+          <label for="siPassword">Password</label>
+          <div class="co__pw">
+            <input id="siPassword" type="password" autocomplete="current-password" required />
+            <button type="button" class="co__pwtoggle" aria-label="Show password" aria-pressed="false">Show</button>
+          </div>
+        </div>
+        <p class="co__error" id="siError" role="alert" hidden></p>
+        <button type="submit" class="btn btn--gold btn--block" id="siBtn">Sign in</button>
+        <p class="ac__small"><a href="#" class="co__link js-whatsapp" data-msg="Hello, I've forgotten the password for my account.">Forgotten your password?</a> Message us and we'll reset it.</p>
+        <hr class="ac__rule" />
+        <p class="ac__small">New here? There's no need to sign up first — just check out as a guest, and you can save your details after your first order.</p>
+      </form>
+    </section>
+
+    <!-- Signed in -->
+    <section class="ac__home" id="acHome" hidden>
+      <header class="ac__head">
+        <div>
+          <p class="eyebrow">My Account</p>
+          <h1 class="co__title">Hello, <em id="acName"></em></h1>
+        </div>
+        <button type="button" class="btn btn--ghost btn--sm" id="acSignOut">Sign out</button>
+      </header>
+
+      <div class="ac__grid">
+        <section class="ac__orders" aria-labelledby="ordersTitle">
+          <h2 class="ac__h2" id="ordersTitle">Your orders</h2>
+          <div id="acOrders"></div>
+        </section>
+
+        <aside class="ac__side">
+          <form class="ac__card" id="detailsForm" novalidate aria-labelledby="detailsTitle">
+            <h2 class="ac__h2" id="detailsTitle">Your details</h2>
+            <div class="fields">
+              <div class="field field--full">
+                <label for="dName">Full name</label>
+                <input id="dName" name="name" autocomplete="name" required />
+              </div>
+              <div class="field field--full">
+                <label for="dPhone">Mobile number <small>used to sign in</small></label>
+                <input id="dPhone" readonly aria-describedby="dPhoneNote" />
+                <p class="ac__small" id="dPhoneNote">To change it, <a href="#" class="co__link js-whatsapp" data-msg="Hello, I'd like to change the phone number on my account.">message us</a>.</p>
+              </div>
+              <div class="field field--full">
+                <label for="dEmail">Email <small>optional — you can sign in with it too</small></label>
+                <input id="dEmail" name="email" type="email" autocomplete="email" />
+              </div>
+            </div>
+            <h3 class="ac__h3">Delivery address</h3>
+            <div class="fields">
+              <div class="field field--full">
+                <label for="dAddr1" class="sr-only">Address</label>
+                <input id="dAddr1" name="address1" autocomplete="address-line1" placeholder="House number and street" />
+              </div>
+              <div class="field field--full">
+                <label for="dAddr2" class="sr-only">Address line 2</label>
+                <input id="dAddr2" name="address2" autocomplete="address-line2" placeholder="Apartment, landmark (optional)" />
+              </div>
+              <div class="field">
+                <label for="dCity" class="sr-only">City / Town</label>
+                <input id="dCity" name="city" autocomplete="address-level2" placeholder="City / Town" />
+              </div>
+              <div class="field">
+                <label for="dDistrict" class="sr-only">District</label>
+                <select id="dDistrict" name="district" autocomplete="address-level1"><option value="">District</option></select>
+              </div>
+            </div>
+            <p class="co__error" id="dError" role="alert" hidden></p>
+            <button type="submit" class="btn btn--gold btn--block" id="dSave">Save details</button>
+          </form>
+
+          <form class="ac__card" id="pwForm" novalidate aria-labelledby="pwTitle">
+            <h2 class="ac__h2" id="pwTitle">Change password</h2>
+            <div class="fields">
+              <div class="field field--full">
+                <label for="pCurrent">Current password</label>
+                <input id="pCurrent" type="password" autocomplete="current-password" />
+              </div>
+              <div class="field field--full">
+                <label for="pNew">New password <small>8+ characters</small></label>
+                <input id="pNew" type="password" autocomplete="new-password" minlength="8" />
+              </div>
+            </div>
+            <p class="co__error" id="pError" role="alert" hidden></p>
+            <button type="submit" class="btn btn--ghost btn--block" id="pSave">Update password</button>
+          </form>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Static mode -->
+    <section class="co__empty" id="acUnavailable" hidden>
+      <p class="eyebrow">My Account</p>
+      <h1 class="section__title">Accounts are <em>offline</em></h1>
+      <p>Accounts need the store server. You can still shop and check out as a guest.</p>
+      <a href="index.html#signatures" class="btn btn--gold">Continue shopping</a>
+    </section>
+  </main>
+
+  <div class="ac__toast" id="acToast" role="status" aria-live="polite"></div>
+
+  <footer class="co-foot">
+    <div class="container">
+      <p>© <span id="year"></span> The Fragrance Store &nbsp;·&nbsp; <a href="#" class="js-whatsapp" data-msg="Hello, I need help with my account.">Need help? WhatsApp us</a></p>
+    </div>
+  </footer>
+
+  <script src="js/settings.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/account.js"></script>
+</body>
+</html>

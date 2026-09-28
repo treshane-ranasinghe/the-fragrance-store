@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Admin — The Fragrance Store</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#0B0A09" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Nunito:wght@800;900&family=Antonio:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/shop.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <script>
+    document.documentElement.classList.add("js");
+    function imgFallback(img) {
+      var exts = ["jpg", "png", "jpeg", "webp"];
+      var src = img.getAttribute("src");
+      var m = src.match(/^(.*)\.(\w+)$/);
+      if (!m) { img.remove(); return; }
+      var tried = (img.dataset.tried || m[2]).split(",");
+      var next = exts.filter(function (e) { return tried.indexOf(e) === -1; })[0];
+      if (!next) { img.remove(); return; }
+      img.dataset.tried = tried.concat(next).join(",");
+      img.src = m[1] + "." + next;
+    }
+  </script>
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
+</head>
+<body class="ad-page">
+
+  <!-- ============ Sign in ============ -->
+  <main class="ad-login" id="login" hidden>
+    <form class="ad-login__card" id="loginForm" novalidate>
+      <a href="index.html" class="logo" aria-label="The Fragrance Store — home">
+        <span class="logo__top">The Fragrance</span>
+        <span class="logo__word">S<span class="logo__bottle" aria-hidden="true"><svg viewBox="0 0 108 172"><path d="M31 3Q54-1 77 3V55H80V59H108V172H0V59H27V55H31Z"/></svg><i></i><i></i><i></i><i></i></span><span class="sr-only">T</span>ORE</span>
+      </a>
+      <p class="eyebrow">Store Admin</p>
+      <h1>Sign in</h1>
+      <div class="field">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label for="loginPassword">Password</label>
+        <div class="ad-pw">
+          <input id="loginPassword" type="password" autocomplete="current-password" required />
+          <button type="button" id="pwToggle" aria-label="Show password" aria-pressed="false">Show</button>
+        </div>
+      </div>
+      <p class="ad-error" id="loginError" role="alert" hidden></p>
+      <button type="submit" class="btn btn--gold btn--block" id="loginBtn">Sign in</button>
+      <a href="index.html" class="ad-login__back">← Back to the store</a>
+    </form>
+  </main>
+
+  <!-- ============ Dashboard ============ -->
+  <div class="ad-app" id="app" hidden>
+    <header class="ad-top">
+      <div class="ad-top__inner">
+        <a href="index.html" class="ad-brand" aria-label="The Fragrance Store — home">
+          <span class="logo__word" aria-hidden="true">S<span class="logo__bottle"><svg viewBox="0 0 108 172"><path d="M31 3Q54-1 77 3V55H80V59H108V172H0V59H27V55H31Z"/></svg></span>ORE</span>
+          <span class="ad-brand__tag">Admin</span>
+        </a>
+        <nav class="ad-top__nav" aria-label="Admin">
+          <a href="#dashboard" data-view="dashboard">Dashboard</a>
+          <a href="#orders" data-view="orders">Orders <b class="ad-count" id="newCount" hidden></b></a>
+          <a href="#products" data-view="products">Products</a>
+        </nav>
+        <div class="ad-top__user">
+          <a href="index.html" target="_blank" rel="noopener" class="ad-link">View store ↗</a>
+          <span class="ad-top__email" id="userEmail"></span>
+          <button type="button" class="ad-btn ad-btn--ghost ad-btn--sm" id="signOut">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="ad-main">
+
+      <!-- ============ Dashboard ============ -->
+      <section class="ad-view" id="view-dashboard" aria-labelledby="dashTitle" hidden>
+        <header class="ad-head">
+          <div>
+            <h1 id="dashTitle">Dashboard</h1>
+            <p class="ad-head__sub" id="dashRange"></p>
+          </div>
+          <div class="ad-seg" role="radiogroup" aria-label="Time period">
+            <label><input type="radio" name="period" value="7" /><span>7 days</span></label>
+            <label><input type="radio" name="period" value="30" checked /><span>30 days</span></label>
+            <label><input type="radio" name="period" value="90" /><span>90 days</span></label>
+            <label><input type="radio" name="period" value="all" /><span>All time</span></label>
+          </div>
+        </header>
+
+        <div class="ad-attn" id="attention"></div>
+
+        <div class="ad-kpis" id="kpis"></div>
+
+        <section class="ad-card ad-card--chart" aria-labelledby="salesTitle">
+          <header class="ad-card__head">
+            <h2 id="salesTitle">Sales</h2>
+            <p class="ad-card__sub" id="salesSub"></p>
+          </header>
+          <div class="ad-chart" id="salesChart"></div>
+          <details class="ad-table-toggle">
+            <summary>Show as table</summary>
+            <div id="salesTable"></div>
+          </details>
+        </section>
+
+        <div class="ad-grid">
+          <section class="ad-card" aria-labelledby="topTitle">
+            <header class="ad-card__head"><h2 id="topTitle">Top products</h2><p class="ad-card__sub">By sales</p></header>
+            <div id="topProducts"></div>
+          </section>
+          <section class="ad-card" aria-labelledby="payTitle">
+            <header class="ad-card__head"><h2 id="payTitle">Payment methods</h2><p class="ad-card__sub">Share of orders</p></header>
+            <div id="payments"></div>
+          </section>
+          <section class="ad-card" aria-labelledby="distTitle">
+            <header class="ad-card__head"><h2 id="distTitle">Where orders go</h2><p class="ad-card__sub">Orders by district</p></header>
+            <div id="districts"></div>
+          </section>
+          <section class="ad-card" aria-labelledby="statusTitle">
+            <header class="ad-card__head"><h2 id="statusTitle">Order status</h2><p class="ad-card__sub">Orders in this period</p></header>
+            <div id="statuses"></div>
+          </section>
+        </div>
+
+        <section class="ad-card" aria-labelledby="recentTitle">
+          <header class="ad-card__head">
+            <h2 id="recentTitle">Recent orders</h2>
+            <a href="#orders" class="ad-link">View all orders</a>
+          </header>
+          <div id="recentOrders"></div>
+        </section>
+      </section>
+
+      <!-- ============ Orders ============ -->
+      <section class="ad-view" id="view-orders" aria-labelledby="ordersTitle" hidden>
+        <header class="ad-head">
+          <div>
+            <h1 id="ordersTitle">Orders</h1>
+            <p class="ad-head__sub" id="orderStats"></p>
+          </div>
+          <button type="button" class="ad-btn ad-btn--ghost" id="refreshOrders">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 10-2.3 5.7M20 5v6h-6"/></svg>
+            Refresh
+          </button>
+        </header>
+
+        <div class="ad-toolbar">
+          <label class="ad-search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+            <span class="sr-only">Search orders</span>
+            <input type="search" id="orderSearch" placeholder="Order number, name or phone" autocomplete="off" />
+          </label>
+          <div class="ad-seg ad-seg--scroll" role="radiogroup" aria-label="Filter by status">
+            <label><input type="radio" name="ostatus" value="open" checked /><span>Open</span></label>
+            <label><input type="radio" name="ostatus" value="pending" /><span>New</span></label>
+            <label><input type="radio" name="ostatus" value="confirmed" /><span>To send</span></label>
+            <label><input type="radio" name="ostatus" value="unpaid" /><span>Unpaid</span></label>
+            <label><input type="radio" name="ostatus" value="delivered" /><span>Completed</span></label>
+            <label><input type="radio" name="ostatus" value="cancelled" /><span>Cancelled</span></label>
+            <label><input type="radio" name="ostatus" value="all" /><span>All</span></label>
+          </div>
+        </div>
+
+        <div class="ad-list" id="orderList" aria-live="polite"></div>
+      </section>
+
+      <!-- ============ Products ============ -->
+      <section class="ad-view" id="view-products" aria-labelledby="productsTitle" hidden>
+      <header class="ad-head">
+        <div>
+          <h1 id="productsTitle">Products</h1>
+          <p class="ad-head__sub" id="productStats"></p>
+        </div>
+        <button type="button" class="ad-btn ad-btn--gold" id="addBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Add product
+        </button>
+      </header>
+
+      <div class="ad-toolbar">
+        <label class="ad-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+          <span class="sr-only">Search products</span>
+          <input type="search" id="adSearch" placeholder="Search products" autocomplete="off" />
+        </label>
+        <div class="ad-seg" role="radiogroup" aria-label="Filter by stock">
+          <label><input type="radio" name="stock" value="all" checked /><span>All</span></label>
+          <label><input type="radio" name="stock" value="in" /><span>In stock</span></label>
+          <label><input type="radio" name="stock" value="out" /><span>Sold out</span></label>
+        </div>
+      </div>
+
+      <div class="ad-list" id="list" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ============ Product editor ============ -->
+  <div class="ad-sheet" id="editor" aria-hidden="true">
+    <div class="ad-sheet__backdrop" data-close-editor></div>
+    <form class="ad-sheet__panel" id="editorForm" role="dialog" aria-modal="true" aria-labelledby="editorTitle" novalidate>
+      <header class="ad-sheet__head">
+        <h2 id="editorTitle">Add product</h2>
+        <button type="button" class="bag__close" data-close-editor aria-label="Close">&times;</button>
+      </header>
+
+      <div class="ad-sheet__body">
+        <section class="ad-group">
+          <h3>Image</h3>
+          <div class="ad-image">
+            <div class="ad-image__preview" id="imgPreview"></div>
+            <div class="ad-image__side">
+              <label class="ad-btn ad-btn--ghost ad-btn--sm ad-file">
+                <input type="file" id="imgInput" accept="image/*" />
+                <span>Upload image</span>
+              </label>
+              <button type="button" class="ad-link" id="imgRemove" hidden>Remove uploaded image</button>
+              <p class="ad-hint" id="imgHint"></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="ad-group">
+          <h3>Details</h3>
+          <div class="fields">
+            <div class="field">
+              <label for="eHouse">Brand / house</label>
+              <input id="eHouse" name="house" list="houseList" required />
+              <datalist id="houseList"></datalist>
+              <p class="field__err">Enter the brand.</p>
+            </div>
+            <div class="field">
+              <label for="eName">Name</label>
+              <input id="eName" name="name" required />
+              <p class="field__err">Enter the product name.</p>
+            </div>
+            <div class="field">
+              <label for="eType">Concentration</label>
+              <input id="eType" name="type" list="typeList" placeholder="e.g. Eau de Parfum" required />
+              <datalist id="typeList">
+                <option>Eau de Parfum</option><option>Parfum</option><option>Eau de Toilette</option>
+                <option>Parfum Intense</option><option>Extrait de Parfum</option><option>Eau de Cologne</option>
+              </datalist>
+              <p class="field__err">Enter the concentration.</p>
+            </div>
+            <div class="field">
+              <label for="eBadge">Badge <small>optional</small></label>
+              <input id="eBadge" name="badge" list="badgeList" placeholder="e.g. Bestseller" maxlength="18" />
+              <datalist id="badgeList"><option>Bestseller</option><option>New</option><option>Signature</option><option>Limited</option><option>Icon</option></datalist>
+            </div>
+            <div class="field field--full">
+              <label for="eId">Product ID <small id="eIdNote">used in links and as the image filename</small></label>
+              <input id="eId" name="id" pattern="[a-z0-9]+(-[a-z0-9]+)*" required />
+              <p class="field__err">Use lowercase letters, numbers and dashes only.</p>
+            </div>
+            <div class="field field--full">
+              <label for="eDesc">Description</label>
+              <textarea id="eDesc" name="description" rows="3" required></textarea>
+              <p class="field__err">Add a short description.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="ad-group">
+          <h3>Collections</h3>
+          <div class="ad-checks">
+            <label class="ad-check"><input type="checkbox" name="tags" value="him" /><span>For Him</span></label>
+            <label class="ad-check"><input type="checkbox" name="tags" value="her" /><span>For Her</span></label>
+            <label class="ad-check"><input type="checkbox" name="tags" value="arabian" /><span>Arabian</span></label>
+          </div>
+        </section>
+
+        <section class="ad-group">
+          <h3>Scent notes</h3>
+          <div class="fields">
+            <div class="field field--full"><label for="eTop">Top</label><input id="eTop" name="top" placeholder="Bergamot, Pink Pepper" /></div>
+            <div class="field field--full"><label for="eHeart">Heart</label><input id="eHeart" name="heart" placeholder="Rose, Jasmine" /></div>
+            <div class="field field--full"><label for="eBase">Base</label><input id="eBase" name="base" placeholder="Vanilla, Amber, Musk" /></div>
+          </div>
+        </section>
+
+        <section class="ad-group">
+          <h3>Sizes &amp; prices</h3>
+          <div class="ad-sizes" id="sizes"></div>
+          <p class="field__err" id="sizesErr">Add at least one size. Sizes must be different.</p>
+          <button type="button" class="ad-link" id="addSize">+ Add size</button>
+          <p class="ad-hint">Leave the price empty to show “Price on request”.</p>
+        </section>
+
+        <section class="ad-group">
+          <label class="ad-switch">
+            <input type="checkbox" name="inStock" id="eStock" />
+            <span class="ad-switch__track" aria-hidden="true"></span>
+            <span><b>In stock</b><small>When off, the product shows as sold out and can't be added to the bag.</small></span>
+          </label>
+        </section>
+      </div>
+
+      <footer class="ad-sheet__foot">
+        <button type="button" class="ad-btn ad-btn--danger" id="deleteBtn" hidden>Delete</button>
+        <span class="ad-spacer"></span>
+        <button type="button" class="ad-btn ad-btn--ghost" data-close-editor>Cancel</button>
+        <button type="submit" class="ad-btn ad-btn--gold" id="saveBtn">Save product</button>
+      </footer>
+    </form>
+  </div>
+
+  <!-- ============ Order detail ============ -->
+  <div class="ad-sheet" id="orderSheet" aria-hidden="true">
+    <div class="ad-sheet__backdrop" data-close-order></div>
+    <div class="ad-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+      <header class="ad-sheet__head">
+        <div>
+          <h2 id="orderTitle"></h2>
+          <p class="ad-sheet__sub" id="orderPlaced"></p>
+        </div>
+        <button type="button" class="bag__close" data-close-order aria-label="Close">&times;</button>
+      </header>
+      <div class="ad-sheet__body" id="orderBody"></div>
+      <footer class="ad-sheet__foot" id="orderFoot"></footer>
+    </div>
+  </div>
+
+  <!-- ============ Confirm dialog ============ -->
+  <dialog class="ad-dialog" id="confirm" aria-labelledby="confirmTitle">
+    <form method="dialog">
+      <h2 id="confirmTitle"></h2>
+      <div id="confirmBody"></div>
+      <div class="ad-dialog__actions">
+        <button value="cancel" class="ad-btn ad-btn--ghost" id="confirmCancel">Cancel</button>
+        <button value="ok" class="ad-btn ad-btn--danger" id="confirmOk">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="ad-toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/settings.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/admin-orders.js"></script>
+</body>
+</html>

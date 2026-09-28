@@ -1,0 +1,14 @@
+{
+  "name": "thefragrancestore",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The Fragrance Store — storefront, checkout and admin",
+  "scripts": {
+    "start": "node server.js",
+    "create-admin": "node server.js create-admin",
+    "reset-customer-password": "node server.js reset-customer-password"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

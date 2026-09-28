@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Checkout — The Fragrance Store</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#0B0A09" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&family=Nunito:wght@700;800;900&family=Antonio:wght@300;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/shop.css" />
+  <script>
+    document.documentElement.classList.add("js");
+    function imgFallback(img) {
+      var exts = ["jpg", "png", "jpeg", "webp"];
+      var src = img.getAttribute("src");
+      var m = src.match(/^(.*)\.(\w+)$/);
+      var tried = (img.dataset.tried || m[2]).split(",");
+      var next = exts.filter(function (e) { return tried.indexOf(e) === -1; })[0];
+      if (!next) { img.remove(); return; }
+      img.dataset.tried = tried.concat(next).join(",");
+      img.src = m[1] + "." + next;
+    }
+  </script>
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
+</head>
+<body data-page="checkout" class="co-page">
+
+  <header class="co-head">
+    <div class="container co-head__inner">
+      <a href="index.html#signatures" class="co-head__back">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        <span>Continue shopping</span>
+      </a>
+      <a href="index.html" class="logo" aria-label="The Fragrance Store — home">
+        <span class="logo__top">The Fragrance</span>
+        <span class="logo__word">S<span class="logo__bottle" aria-hidden="true"><svg viewBox="0 0 108 172"><path d="M31 3Q54-1 77 3V55H80V59H108V172H0V59H27V55H31Z"/></svg><i></i><i></i><i></i><i></i></span><span class="sr-only">T</span>ORE</span>
+      </a>
+      <p class="co-head__secure">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+        <span>Secure checkout</span>
+      </p>
+    </div>
+  </header>
+
+  <main class="co container" id="top">
+
+    <!-- Empty bag -->
+    <section class="co__empty" id="coEmpty" hidden>
+      <p class="eyebrow">Your Bag</p>
+      <h1 class="section__title">Your bag is <em>empty</em></h1>
+      <p>Discover a scent that feels unmistakably yours.</p>
+      <a href="index.html#signatures" class="btn btn--gold">Explore the Signatures</a>
+    </section>
+
+    <!-- Checkout -->
+    <div class="co__grid" id="coMain" hidden>
+      <form class="co__form" id="coForm" novalidate>
+        <header class="co__intro">
+          <p class="eyebrow">Checkout</p>
+          <h1 class="co__title">Complete your <em>order</em></h1>
+          <p class="co__account" id="coAccount" hidden></p>
+        </header>
+
+        <section class="co__step" aria-labelledby="stepContact">
+          <h2 id="stepContact"><span>01</span> Contact</h2>
+          <div class="fields">
+            <div class="field field--full">
+              <label for="fName">Full name</label>
+              <input id="fName" name="name" autocomplete="name" required />
+              <p class="field__err" id="fNameErr">Please enter your name.</p>
+            </div>
+            <div class="field">
+              <label for="fPhone">Mobile number</label>
+              <input id="fPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="07X XXX XXXX" required />
+              <p class="field__err" id="fPhoneErr">Enter a valid Sri Lankan number, e.g. 077 123 4567.</p>
+            </div>
+            <div class="field">
+              <label for="fEmail">Email <small>optional — for your receipt</small></label>
+              <input id="fEmail" name="email" type="email" autocomplete="email" />
+              <p class="field__err" id="fEmailErr">That email doesn't look right.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="co__step" aria-labelledby="stepDelivery">
+          <h2 id="stepDelivery"><span>02</span> Delivery</h2>
+          <div class="choices" role="radiogroup" aria-labelledby="stepDelivery">
+            <label class="choice">
+              <input type="radio" name="fulfilment" value="delivery" checked />
+              <span class="choice__box">
+                <span class="choice__title">Island-wide delivery <b id="coDeliveryFee"></b></span>
+                <span class="choice__sub">2 – 4 working days, carefully packed</span>
+              </span>
+            </label>
+            <label class="choice" id="coPickupChoice">
+              <input type="radio" name="fulfilment" value="pickup" />
+              <span class="choice__box">
+                <span class="choice__title">Collect from the boutique <b>Free</b></span>
+                <span class="choice__sub">Ready within 24 hours — Colombo</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="fields" id="coAddress">
+            <div class="field field--full">
+              <label for="fAddr1">Address</label>
+              <input id="fAddr1" name="address1" autocomplete="address-line1" placeholder="House number and street" required />
+              <p class="field__err" id="fAddr1Err">Please enter your address.</p>
+            </div>
+            <div class="field field--full">
+              <label for="fAddr2" class="sr-only">Address line 2</label>
+              <input id="fAddr2" name="address2" autocomplete="address-line2" placeholder="Apartment, landmark (optional)" />
+            </div>
+            <div class="field">
+              <label for="fCity">City / Town</label>
+              <input id="fCity" name="city" autocomplete="address-level2" required />
+              <p class="field__err" id="fCityErr">Please enter your city.</p>
+            </div>
+            <div class="field">
+              <label for="fDistrict">District</label>
+              <select id="fDistrict" name="district" autocomplete="address-level1" required>
+                <option value="">Select district</option>
+              </select>
+              <p class="field__err" id="fDistrictErr">Please choose your district.</p>
+            </div>
+          </div>
+
+          <div class="fields">
+            <div class="field field--full">
+              <label for="fNotes">Order notes <small>optional</small></label>
+              <textarea id="fNotes" name="notes" rows="2" placeholder="Gift message, delivery instructions…"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="co__step" aria-labelledby="stepPayment">
+          <h2 id="stepPayment"><span>03</span> Payment</h2>
+          <div class="choices" role="radiogroup" aria-labelledby="stepPayment">
+            <label class="choice">
+              <input type="radio" name="payment" value="card" checked />
+              <span class="choice__box">
+                <span class="choice__title">Pay online
+                  <span class="cards" aria-label="Visa, Mastercard, American Express">
+                    <i>VISA</i><i>MC</i><i>AMEX</i>
+                  </span>
+                </span>
+                <span class="choice__sub">Credit or debit card, secured by PayHere</span>
+              </span>
+            </label>
+            <label class="choice" id="coCodChoice">
+              <input type="radio" name="payment" value="cod" />
+              <span class="choice__box">
+                <span class="choice__title"><span id="coCodTitle">Cash on delivery</span> <b id="coCodFee"></b></span>
+                <span class="choice__sub" id="coCodSub">Pay in cash when your order arrives</span>
+              </span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="payment" value="bank" />
+              <span class="choice__box">
+                <span class="choice__title">Bank transfer</span>
+                <span class="choice__sub">We dispatch once your transfer is confirmed</span>
+              </span>
+            </label>
+          </div>
+          <p class="co__paynote" id="coPayNote" aria-live="polite"></p>
+        </section>
+      </form>
+
+      <aside class="co__summary" aria-labelledby="summaryTitle">
+        <div class="co__summary-inner">
+          <h2 id="summaryTitle">Order summary <a href="index.html#signatures" class="co__edit">Edit bag</a></h2>
+          <ul class="co__items" id="coItems"></ul>
+          <dl class="co__totals" id="coTotals"></dl>
+          <p class="co__error" id="coError" role="alert" hidden></p>
+          <button type="submit" form="coForm" class="btn btn--gold btn--block co__submit" id="coSubmit">Place order</button>
+          <ul class="co__assure">
+            <li>100% authentic, sealed bottles</li>
+            <li>Your details are only used for this order</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Confirmation (filled by js/checkout.js) -->
+    <section class="co__done" id="coDone" hidden tabindex="-1"></section>
+  </main>
+
+  <footer class="co-foot">
+    <div class="container">
+      <p>© <span id="year"></span> The Fragrance Store &nbsp;·&nbsp; <a href="#" class="js-whatsapp" data-msg="Hello, I need help with my order.">Need help? WhatsApp us</a></p>
+    </div>
+  </footer>
+
+  <script src="js/settings.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/checkout.js"></script>
+</body>
+</html>
